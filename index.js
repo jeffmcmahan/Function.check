@@ -53,9 +53,11 @@ function checkArgs(argTypes, values) {
       `${arg.name} was not of type ${arg.type}. ${printType(values[i])} provided.`
     )
   })
-  if (err.length) throw new TypeError(
+  if (err.length) const err = new TypeError(
     `${this.name}(${argTypes.list})\n\n  ${err.join('\n\n  ')}\n`
   )
+  console.log(err)
+  throw err
 }
 
 /**
