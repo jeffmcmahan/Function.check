@@ -10,8 +10,10 @@ Include the library with `require('function.check')`, and it will define a `Func
 
 ```js
 function newUser(name=String, email=String, age=Number, zipcode=Number) {
+  
   newUser.check(arguments)
-  // ...
+
+  // Your function body.
 }
 ```
 
@@ -40,19 +42,40 @@ TypeError: newUser(name=String, email=String, age=Number, zipcode=Number)
 Ordinary named functions (shown above) as well as async functions, generator functions, and async generator functions are all supported:
 
 ```js
-async function newUser(a=String, b=Object) {
+async function newUser(name=String, email=String, zipcode=Number) {
+
   newUser.check(arguments)
+
   //...
 }
 
-function* newUser(a=String, b=Object) {
+function* newUser(name=String, email=String, zipcode=Number) {
+
   newUser.check(arguments)
+
   //...
 }
 
-async function* newUser(a=String, b=Object) {
+async function* newUser(name=String, email=String, zipcode=Number) {
+
   newUser.check(arguments)
+
   //...
+}
+```
+
+Or, in a class definition, use `this.<method-name>` to check arguments: 
+
+```js
+class User {
+
+  promote(newRole=String, promotedBy=User, ) {
+
+    this.promote.check(arguments)
+
+    //...
+  }
+
 }
 ```
 
@@ -69,7 +92,9 @@ class Administrator extends User {
 }
 
 async function authorize(user=User, password=String) {
+
   authorize.check(arguments)
+
   // ...
 }
 
@@ -88,20 +113,31 @@ function newUser(name=String, age, phone=String) {
 ```
 
 ## Arity is strict.
-Functions containing a `.check` call will always throw when invoked with more or fewer arguments than appear in the function declaration.
+Functions containing a `.check` call will always throw when invoked with more or fewer arguments than appear in the function declaration, whether the arguments have a defined type or not.
 
 ```js
 function newUser() {
+
   newUser.check(arguments)
+
   //...
 }
 
 newUser('Bill') // throws
 
 function newUser(name=String, age) {
+
   newUser.check(arguments)
+
   //...
 }
 
 newUser('Bill') // throws
 ```
+
+## Default values are not supported.
+Javascript's default values feature cannot be used in combination with a type checker that required correct arity; that is, if a value isn't provided for a particular parameter, the type checker will throw, so the default value will never be usable (even though it would be syntactically valid to specify one).
+
+The reason for requiring correct arity is simple: it prevents client code from misunderstanding the API it's using. Default values can cause confusion when refactoring, because they tend to make it appear as though client code is more in sync with the API than is actually the case.
+
+To use default values in a function declaration, don't call `<`function-name>.check()` within the body.
