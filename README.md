@@ -2,7 +2,7 @@
 A simple way of declaring and checking types at runtime in javascript.
 
 ## Example
-Include the library with `require('function.check')`, and it will define a `Function#check` method. which can then be used anywhere in your program, to argument check types, like this:
+Include the library with `require('function.check')`, and it will define a `Function#check` method. which can then be used anywhere in your program, to check argument arity and types. Declare types using the existing javascript default value syntax, and then pass `arguments` to `<function-name>.check` as shown here:
 
 ```js
 function newUser(name=String, email=String, age=Number, zipcode=Number) {
