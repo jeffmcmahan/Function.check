@@ -82,8 +82,6 @@ assert.throws(
   'Primitives: Should throw when Function is required, but Boolean is passed.'
 )
 
-primitives(false, '', 0, [], {}, true)
-
 //================================================ Non-checking ================
 
 function nonChecking(a, b, c) {
@@ -178,3 +176,5 @@ assert.doesNotThrow(
   ()=>superclass2(new VeryCustomObject),
   'Should not throw when a subclass is passed. (#3)'
 )
+
+console.log('Tests passed.\n')
