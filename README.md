@@ -136,7 +136,7 @@ newUser('Bill') // throws
 ```
 
 ## Default values are not supported.
-Javascript's default values feature cannot be used in combination with a type checker that required correct arity; that is, if a value isn't provided for a particular parameter, the type checker will throw, so the default value will never be usable (even though it would be syntactically valid to specify one).
+Javascript's default values feature cannot be used in combination with a type checker that requires correct arity; that is, if a value isn't provided for a particular parameter, the type checker will throw, so the default value will never be usable (even though it would be syntactically valid to specify one).
 
 The reason for requiring correct arity is simple: it prevents client code from misunderstanding the API it's using. Default values can cause confusion when refactoring, because they tend to make it appear as though client code is more in sync with the API than is actually the case.
 
