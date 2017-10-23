@@ -140,4 +140,4 @@ Javascript's default values feature cannot be used in combination with a type ch
 
 The reason for requiring correct arity is simple: it prevents client code from misunderstanding the API it's using. Default values can cause confusion when refactoring, because they tend to make it appear as though client code is more in sync with the API than is actually the case.
 
-To use default values in a function declaration, don't call `<`function-name>.check()` within the body.
+To use default values in a function declaration, don't call `&lt;function-name>.check()` within the body.
