@@ -25,8 +25,7 @@ function arity(a=Number, b=Number) {
 
 assert.doesNotThrow(
   ()=>arity(1, 2),
-  'Should not throw when correct number of arguments are passed.',
-  err => err.message.includes('Too many arguments')
+  'Should not throw when correct number of arguments are passed.'
 )
 
 assert.throws(
