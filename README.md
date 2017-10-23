@@ -36,7 +36,7 @@ TypeError: newUser(name=String, email=String, age=Number, zipcode=Number)
     at Function.Module.runMain (module.js:665:10)
 ```
 
-## Supports all named functions.
+## Supports all methods and named functions.
 Ordinary named functions (shown above) as well as async functions, generator functions, and async generator functions are all supported:
 
 ```js

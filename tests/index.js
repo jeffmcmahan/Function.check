@@ -176,4 +176,22 @@ assert.doesNotThrow(
   'Should not throw when a subclass is passed. (#3)'
 )
 
+//================================================ Methods =====================
+
+class ClassWithMethods {
+  methodFunc(a=Number) {
+    this.methodFunc.check(arguments)
+  }
+}
+
+assert.doesNotThrow(
+  ()=>new ClassWithMethods().methodFunc(0),
+  'Should not throw when a method is called with correct types.'
+)
+
+assert.throws(
+  ()=> new ClassWithMethods().methodFunc(false),
+  'Should throw when a method is called with an incorrect type.'
+)
+
 console.log('Tests passed.\n')

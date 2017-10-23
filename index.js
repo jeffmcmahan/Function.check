@@ -5,7 +5,7 @@ const typesMap = {
   Function: v=>typeof v == 'function',
   Boolean: v=>typeof v == 'boolean',
   String: v=>typeof v == 'string',
-  Number: v=>!isNaN(v),
+  Number: v=>typeof v === 'number' && !isNaN(v),
   Object: v=>!(v instanceof Array) && v instanceof Object
 }
 
@@ -27,7 +27,7 @@ function printType(value) {
  * @param {String} typeName
  * @return {Boolean}
  */
-function instanceOf(value, typeName) {
+function instanceOf(typeName, value) {
   let constructor = value.constructor
   while (constructor) {
     if (constructor.name === typeName) return true
@@ -45,7 +45,7 @@ function instanceOf(value, typeName) {
 function checkArgs(argTypes, values) {
   const err = []
   if (values.length > argTypes.length) err.push(
-    `Too many arguments. ${values.length} passed, ${argTypes.length} declared.`
+    `Too many parameters: ${values.length} passed, ${argTypes.length} declared.`
   )
   argTypes.forEach((arg, i) => {
     if (values.length <= i) return err.push(`${arg.name} parameter not provided.`)
@@ -86,13 +86,13 @@ function getArgsList(src) {
 function getArgumentTypes(func) {
   const list = getArgsList(func.toString())
   if (!list) return []
-  const argTypes = list.split(',').map(s => s.trim()).map(s => {
+  const argTypes = list.split(',').map(s=>s.trim()).map(s => {
     let [name, type] = s.split('=')
     if (!type) type = 'Any'
     if (!/^[A-Z]/.test(type)) {
       throw new Error('Default values are not permitted.')
     }
-    const check = typesMap[type] || (v=> instanceOf(v, type))
+    const check = typesMap[type] || instanceOf.bind(null, type)
     return {name, type, check}
   })
   argTypes.list = list
