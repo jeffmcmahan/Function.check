@@ -43,7 +43,7 @@ function instanceOf(typeName, value) {
  * @param {Array} values 
  */
 function checkArgs(argTypes, values) {
-  const err = []
+  let err = []
   if (values.length > argTypes.length) err.push(
     `Too many parameters: ${values.length} passed, ${argTypes.length} declared.`
   )
@@ -53,11 +53,11 @@ function checkArgs(argTypes, values) {
       `${arg.name} was not of type ${arg.type}. ${printType(values[i])} provided.`
     )
   })
-  if (err.length) const err = new TypeError(
-    `${this.name}(${argTypes.list})\n\n  ${err.join('\n\n  ')}\n`
-  )
-  console.log(err)
-  throw err
+  if (err.length) {
+    err = new TypeError(`${this.name}(${argTypes.list})\n\n  ${err.join('\n\n  ')}\n`)
+    console.log(err)
+    throw err
+  }
 }
 
 /**
