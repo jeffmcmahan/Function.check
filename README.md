@@ -28,14 +28,14 @@ TypeError: newUser(name=String, email=String, age=Number, zipcode=Number)
 
    zipcode was not provided.
 
-    at newUser (.../index.js:46:14)
-    at Object.<anonymous> (.../index.js:85:1)
-    at Module._compile (module.js:624:30)
-    at Object.Module._extensions..js (module.js:635:10)
-    at Module.load (module.js:545:32)
-    at tryModuleLoad (module.js:508:12)
-    at Function.Module._load (module.js:500:3)
-    at Function.Module.runMain (module.js:665:10)
+     at newUser (.../index.js:46:14)
+     at Object.<anonymous> (.../index.js:85:1)
+     at Module._compile (module.js:624:30)
+     at Object.Module._extensions..js (module.js:635:10)
+     at Module.load (module.js:545:32)
+     at tryModuleLoad (module.js:508:12)
+     at Function.Module._load (module.js:500:3)
+     at Function.Module.runMain (module.js:665:10)
 ```
 
 ## Supports all methods and named functions.

@@ -85,23 +85,32 @@ function instanceOf(typeName, value) {
  * @param {Array<Mixed>} values
  */
 function showErr(func, argTypes, values) {
-  let err = []
+  let errs = []
   argTypes.forEach((arg, i) => {
-    if (values.length <= i) return err.push(`${arg.name} parameter not provided.`)
-    if (!arg.check(values[i])) err.push(
+    if (values.length <= i) return errs.push(`${arg.name} parameter not provided.`)
+    if (!arg.check(values[i])) errs.push(
       `${arg.name} was not of type ${arg.type}. ${printValueType(values[i])} `+
       `provided: ${printValue(values[i])}`
     )
   })
-  if (values.length > argTypes.length) err.push(
+  if (values.length > argTypes.length) errs.push(
     `Too many parameters: ${values.length} passed, ${argTypes.length} declared.`
   )
-  if (err.length) {
-    err = new TypeError(`${func.name}(${argTypes.list})\n\n  ${err.join('\n\n  ')}\n`)
-    console.log(err)
-    console.log('')
-    throw err
-  }
+  if (errs.length) printError(func.name, argTypes, errs)
+}
+
+function printError(funcName, argTypes, errs) {
+  const error = new TypeError('') // We'll totally rework this.
+  const stack = []
+  error.stack.toString().split('\n').forEach(s=> {
+    if (stack.length || s.includes(funcName)) stack.push(s)
+  })
+  const message = 'Function.check failure: '+
+    `${funcName}(${argTypes.list})\n\n  ${errs.join('\n\n  ')}\n`
+  error.stack = ''
+  error.message = message + '\n' + stack.join('\n')
+  console.log(error.message + '\n')
+  throw error
 }
 
 /**
