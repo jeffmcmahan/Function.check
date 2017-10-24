@@ -106,12 +106,11 @@ assert.doesNotThrow(
 
 function defaults(a=1) {
   defaults.check(arguments)
-  return [a,b,c]
 }
 
 assert.throws(
-  ()=>defaults(),
-  err=>err.message.includes('Default values are not permitted.')
+  ()=> defaults(),
+  err=>err.message.includes('Default values not permitted.')
 )
 
 //================================================ Mixed RQs ===================
