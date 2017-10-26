@@ -144,7 +144,6 @@ function getArgumentTypes(func) {
     argTypes = list.split(',').map(s=>s.trim()).map(s => {
       let [name, type] = s.split('=')
       if (!type) type = 'Any'
-      if (!/^[A-Z]/.test(type)) throw new Error('Default values not permitted.')
       const check = typesMap[type] || instanceOf.bind(null, type)
       return {name, type, check}
     })

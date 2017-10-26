@@ -102,17 +102,6 @@ assert.doesNotThrow(
   'Should not throw when nothing is checked (#2).'
 )
 
-//================================================ Default values ==============
-
-function defaults(a=1) {
-  defaults.check(arguments)
-}
-
-assert.throws(
-  ()=> defaults(),
-  err=>err.message.includes('Default values not permitted.')
-)
-
 //================================================ Mixed RQs ===================
 
 function mixed(a=String, b, c=Number, d, e=Object) {
