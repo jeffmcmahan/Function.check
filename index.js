@@ -109,7 +109,6 @@ function printError(funcName, argTypes, errs) {
     `${funcName}(${argTypes.list})\n\n  ${errs.join('\n\n  ')}\n`
   error.stack = ''
   error.message = message + '\n' + stack.join('\n')
-  console.log(error.message + '\n')
   throw error
 }
 
