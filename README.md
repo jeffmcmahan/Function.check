@@ -6,7 +6,7 @@ npm install function.check
 ```
 
 ## Example
-Include the library with `require('function.check')`, and it will define a `Function#check` method. which can then be used anywhere in your program, to check argument arity and types. Declare types using the existing javascript default value syntax, and then pass `arguments` to `<function-name>.check` as shown here:
+Include the library with `require('function.check')`, and it will define a `Function#check` method, which can be used to check argument arity and types. Declare types using the existing javascript default value syntax, and then pass `arguments` to `<function-name>.check` as shown here:
 
 ```js
 function newUser(name = String, email = String, age = Number) {
@@ -39,13 +39,13 @@ TypeError: newUser(name = String, email = String, age = Number)
 ```
 
 ## How it works
-The first time a function runs, the `.check` call compiles the list of types to a a set of functions which effeciently check the types of the arguments. On each subsequent function, that set of functions is invoked to check the types.
-
-For a simple case, like `str = String` the function called is simply:
+The first time a type checked function runs, the `.check(arguments)` call compiles the list of types to a a set of functions which efficiently check the types of the arguments passed. On each subsequent function call, the compiled set of functions is invoked against the given arguments. For a simple case, like `str = String` the check logic is simply:
 
 ```js
 val => typeof val === 'string'
 ```
+
+The type declaration syntax is valid javascript. In standard javascript expressions like `Array[String]` are nonsense amounting to `undefined`, but these are assigned different syntax and semantics within Function#check.
 
 Whereas more complex union, generic, and duck types require more complex sets of checks that are, correspondingly, more work to execute.
 
@@ -119,7 +119,7 @@ function newUser(name=String, age, phone=String) {
 ```
 
 ## Disjoint/Union Types
-Use the bitwise single bar operator to describe union types: `String|Number|Boolean`.
+Use the bitwise single bar operator to describe union types, as in: `Number|Boolean`.
 
 ```js
 function newUser(name=String, age=Number|String) {
