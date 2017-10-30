@@ -9,7 +9,7 @@ npm install function.check
 Include the library with `require('function.check')`, and it will define a `Function#check` method. which can then be used anywhere in your program, to check argument arity and types. Declare types using the existing javascript default value syntax, and then pass `arguments` to `<function-name>.check` as shown here:
 
 ```js
-function newUser(name=String, email=String, age=Number, zipcode=Number) {
+function newUser(name = String, email = String, age = Number) {
 	newUser.check(arguments)
 	//...
 }
@@ -18,13 +18,13 @@ function newUser(name=String, email=String, age=Number, zipcode=Number) {
 When they occur, type check failures are clearly indicated:
 
 ```
-TypeError: newUser(name=String, email=String, age=Number, zipcode=Number)
+TypeError: newUser(name = String, email = String, age = Number)
 
    name was not of type Function. Boolean provided: false
 
    email was not of type String. Function provided: function find(query=String) ...
 
-   zipcode was not provided.
+   age was not provided.
 
      at newUser (.../index.js:46:14)
      at Object.<anonymous> (.../index.js:85:1)
@@ -56,7 +56,7 @@ async function* newUser(name=String, email=String, zipcode=Number) {
 }
 ```
 
-Or, in a class definition, use `this.<method-name>` to check arguments: 
+Or, within a class definition (ES5 or ES6-style), use `this.<method-name>` to check arguments: 
 
 ```js
 class User {
