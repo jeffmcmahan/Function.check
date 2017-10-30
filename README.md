@@ -10,8 +10,10 @@ Include the library with `require('function.check')`, and it will define a `Func
 
 ```js
 function newUser(name = String, email = String, age = Number) {
+	
 	newUser.check(arguments)
-	//...
+	
+	// Do stuff.
 }
 ```
 
