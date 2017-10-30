@@ -74,7 +74,7 @@ Or, within a class definition (ES5 or ES6-style), use `this.<method-name>` to ch
 ```js
 class User {
 
-	promote(newRole=String, promotedBy=User, ) {
+	promote(newRole=String, promotedBy=User) {
 		this.promote.check(arguments)
 		//...
 	}
@@ -83,11 +83,10 @@ class User {
 ```
 
 ## Type Support
-All types are supported automatically, with .
+All types available to your function declaration are supported automatically.
 
 ```js
-class User extends Object {}
-class Administrator extends User {}
+class User {}
 
 async function authorize(user = User, password = String) {
 	authorize.check(arguments)
@@ -95,7 +94,21 @@ async function authorize(user = User, password = String) {
 }
 ```
 
-## The "Any" type is implicit.
+Superclass/subclass relationships are supported as well:
+
+```js
+class User {}
+class Administrator extends User {}
+
+async function authorize(user = User, password = String) {
+	authorize.check(arguments)
+	// ...
+}
+
+authorize(new Administrator, 'password1') // Pass.
+```
+
+## "Any" is implicit.
 To allow any type, don't specify a type, as in the case of the "age" parameter, below:
 
 ```js
