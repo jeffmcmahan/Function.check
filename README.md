@@ -22,7 +22,7 @@ When they occur, type check failures are clearly indicated:
 ```
 TypeError: newUser(name = String, email = String, age = Number)
 
-   name was not of type Function. Boolean provided: false
+   name was not of type String. Boolean provided: false
 
    email was not of type String. Function provided: function find(query=String) ...
 
