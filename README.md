@@ -1,5 +1,5 @@
 # Function#check
-A simple way of declaring and checking types at runtime in javascript.
+A simple and performant way of declaring and checking types at runtime in javascript.
 
 ```sh
 npm install function.check
@@ -37,6 +37,17 @@ TypeError: newUser(name = String, email = String, age = Number)
      at Function.Module._load (module.js:500:3)
      at Function.Module.runMain (module.js:665:10)
 ```
+
+## How it works
+The first time a function runs, the `.check` call compiles the list of types to a a set of functions which effeciently check the types of the arguments. On each subsequent function, that set of functions is invoked to check the types.
+
+For a simple case, like `function printString(str = String) {...` the function called is simply:
+
+```
+val => typeof val === 'string'
+```
+
+Where, more complex union, generic, and duck types require more complex sets of checks that are, correspondingly, more work to execute.
 
 ## Supports all methods and named functions.
 Ordinary named functions (shown above) as well as async functions, generator functions, and async generator functions are all supported:
