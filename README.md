@@ -41,9 +41,9 @@ TypeError: newUser(name = String, email = String, age = Number)
 ## How it works
 The first time a function runs, the `.check` call compiles the list of types to a a set of functions which effeciently check the types of the arguments. On each subsequent function, that set of functions is invoked to check the types.
 
-For a simple case, like `function printString(str = String) {...` the function called is simply:
+For a simple case, like `str = String` the function called is simply:
 
-```
+```js
 val => typeof val === 'string'
 ```
 
@@ -83,24 +83,16 @@ class User {
 ```
 
 ## Type Support
-All types are supported automatically.
+All types are supported automatically, with .
 
 ```js
-class User extends Object {
-  	// ...
-}
+class User extends Object {}
+class Administrator extends User {}
 
-class Administrator extends User {
-  	//...
-}
-
-async function authorize(user=User, password=String) {
+async function authorize(user = User, password = String) {
 	authorize.check(arguments)
 	// ...
 }
-
-const jill = new Administrator
-authorize(jill, req.body.password) // -> Type check passes.
 ```
 
 ## The "Any" type is implicit.

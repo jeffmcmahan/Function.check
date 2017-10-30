@@ -193,7 +193,7 @@ function getTypeChecks(typeName) {
 }
 
 /**
- Segments the arguments list.
+ Segments the arguments list, without messing with embedded objects.
  - param list: String
  - returns: Array<String>
  */
