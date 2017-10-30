@@ -134,7 +134,7 @@ function newUser(conf={name:String, age:Number|String}) {
 ```
 
 ## Generics
-Generic types can be specified for arrays and objects, replacing the standard angle brackets with square brackets; an array of strings would thus be expressed: `Array[String]` instead of `Array<String>`.
+Generic array and object types can be specified, by altering the standard angle bracket notation to use square brackets instead. An array of strings would thus be expressed: `Array[String]` instead of `Array<String>`.
 
 ```js
 function newUser(name=String, friends=Array[User]) {
