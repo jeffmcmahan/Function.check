@@ -47,7 +47,7 @@ For a simple case, like `str = String` the function called is simply:
 val => typeof val === 'string'
 ```
 
-Where, more complex union, generic, and duck types require more complex sets of checks that are, correspondingly, more work to execute.
+Whereas more complex union, generic, and duck types require more complex sets of checks that are, correspondingly, more work to execute.
 
 ## Supports all methods and named functions.
 Ordinary named functions (shown above) as well as async functions, generator functions, and async generator functions are all supported:
