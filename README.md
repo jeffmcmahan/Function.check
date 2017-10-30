@@ -10,10 +10,8 @@ Include the library with `require('function.check')`, and it will define a `Func
 
 ```js
 function newUser(name=String, email=String, age=Number, zipcode=Number) {
-  
-  newUser.check(arguments)
-
-  // Your function body.
+	newUser.check(arguments)
+	//...
 }
 ```
 
@@ -43,24 +41,18 @@ Ordinary named functions (shown above) as well as async functions, generator fun
 
 ```js
 async function newUser(name=String, email=String, zipcode=Number) {
-
-  newUser.check(arguments)
-
-  //...
+	newUser.check(arguments)
+	//...
 }
 
 function* newUser(name=String, email=String, zipcode=Number) {
-
-  newUser.check(arguments)
-
-  //...
+	newUser.check(arguments)
+	//...
 }
 
 async function* newUser(name=String, email=String, zipcode=Number) {
-
-  newUser.check(arguments)
-
-  //...
+	newUser.check(arguments)
+	//...
 }
 ```
 
@@ -69,12 +61,10 @@ Or, in a class definition, use `this.<method-name>` to check arguments:
 ```js
 class User {
 
-  promote(newRole=String, promotedBy=User, ) {
-
-    this.promote.check(arguments)
-
-    //...
-  }
+	promote(newRole=String, promotedBy=User, ) {
+		this.promote.check(arguments)
+		//...
+	}
 
 }
 ```
@@ -84,18 +74,16 @@ All types are supported automatically.
 
 ```js
 class User extends Object {
-  // ...
+  	// ...
 }
 
 class Administrator extends User {
-  //...
+  	//...
 }
 
 async function authorize(user=User, password=String) {
-
-  authorize.check(arguments)
-
-  // ...
+	authorize.check(arguments)
+	// ...
 }
 
 const jill = new Administrator
@@ -107,33 +95,49 @@ To allow any type, don't specify a type, as in the case of the "age" parameter, 
 
 ```js
 function newUser(name=String, age, phone=String) {
-  newUser.check(arguments)
-  //...
+	newUser.check(arguments)
+	//...
 } 
+```
+
+## Disjoint/Union Types
+Use the bitwise single bar operator to describe union types: `String|Number|Boolean`.
+
+```js
+function newUser(name=String, age=Number|String) {
+	newUser.check(arguments)
+	//...
+}
+```
+
+## Duck Types
+Duck types are object literals. They can be nested indefinitely, and each propery can be disjoint, generic, or a duck type itself.
+
+```js
+function newUser(conf={name:String, age:Number|String}) {
+	newUser.check(arguments)
+	//...
+}
+```
+
+## Generics
+Generic types can be specified for arrays and objects, replacing the standard angle brackets with square brackets; an array of strings would thus be expressed: `Array[String]` instead of `Array<String>`.
+
+```js
+function newUser(name=String, friends=Array[User]) {
+	newUser.check(arguments)
+	//...
+}
+```
+
+Generic types can be nested indefinitely and can use disjoint and duck types. For instance, here's an array of objects having a string property "name" and a number-or-string property "age":
+
+```js
+Array[{name:String, age:Number|String}]
 ```
 
 ## Arity is strict.
 Functions containing a `.check` call will always throw when invoked with more or fewer arguments than appear in the function declaration, whether the arguments have a defined type or not.
-
-```js
-function newUser() {
-
-  newUser.check(arguments)
-
-  //...
-}
-
-newUser('Bill') // throws
-
-function newUser(name=String, age) {
-
-  newUser.check(arguments)
-
-  //...
-}
-
-newUser('Bill') // throws
-```
 
 ## Default values are not supported.
 Javascript's default values feature cannot be used in combination with a type checker that requires correct arity; that is, if a value isn't provided for a particular parameter, the type checker will throw, so the default value will never be usable (even though it would be syntactically valid to specify one).
