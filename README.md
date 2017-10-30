@@ -39,20 +39,25 @@ TypeError: newUser(name = String, email = String, age = Number)
 ```
 
 ## How it works
-The first time a type checked function runs, the `.check(arguments)` call compiles the list of types to a a set of functions which efficiently check the types of the arguments passed. On each subsequent function call, the compiled set of functions is invoked against the given arguments. For a simple case, like `str = String` the check logic is simply:
+The first time a type checked function runs, the `.check(arguments)` call compiles the list of types to a set of functions which efficiently check the types of the arguments passed. On each subsequent function call, the compiled set of functions is invoked against the given arguments. For a simple case, like `str = String` the check logic is simply:
 
 ```js
 val => typeof val === 'string'
 ```
 
-The type declaration syntax is valid javascript. In standard javascript expressions like `Array[String]` are nonsense amounting to `undefined`, but these are assigned different syntax and semantics within Function#check.
-
 Whereas more complex union, generic, and duck types require more complex sets of checks that are, correspondingly, more work to execute.
 
+The type declaration syntax is valid javascript. In standard javascript expressions like `Array[String]` are nonsense amounting to `undefined`, but these are assigned different syntax and semantics within Function#check.
+
 ## Supports all methods and named functions.
-Ordinary named functions (shown above) as well as async functions, generator functions, and async generator functions are all supported:
+Ordinary named functions as well as async functions, generator functions, and async generator functions are all supported:
 
 ```js
+function newUser(name=String, email=String, zipcode=Number) {
+	newUser.check(arguments)
+	//...
+}
+
 async function newUser(name=String, email=String, zipcode=Number) {
 	newUser.check(arguments)
 	//...
