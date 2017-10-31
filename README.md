@@ -1,6 +1,6 @@
-![Function.check](//raw.githubusercontent.com/jeffmcmahan/Function.check/master/function-check.png)
+<img src="https://raw.githubusercontent.com/jeffmcmahan/Function.check/master/function-check.png" width="244.5" height="261">
 
-![travis status](//travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
+![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
 # Function#check
 A simple and performant way of declaring and checking types at runtime in javascript.
