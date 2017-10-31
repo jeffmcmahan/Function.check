@@ -2,7 +2,6 @@
 
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
-# Function#check
 A simple and performant way of declaring and checking types at runtime in javascript.
 
 ```sh
