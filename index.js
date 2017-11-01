@@ -177,11 +177,25 @@ function compile(src) {
  check statemnets (no function calls).
  - param __args: Object<Arguments>
  */
-Function.prototype.check = function(__args) {
+function compileCheck(__args) {
 	const logic = compile(this.toString())
-	this.check = Function('__args', logic.code).bind(this)
-	this.check.e = error.bind(this, this, logic)
-	this.check(__args)
+	const check = Function('__args', logic.code).bind(this)
+	check.e = error.bind(this, this, logic)
+	Object.defineProperty(this, 'check', {
+		configurable: false,
+		enumerable: false,
+		writable: false,
+		value: check
+	})
+	check(__args)
 }
+
+// Making property non-configurable/writable may help the JIT compiler?
+Object.defineProperty(Function.prototype, 'check', {
+	configurable: false,
+	enumerable: false,
+	writable: false,
+	value: compileCheck
+})
 
 module.exports = {compile}
