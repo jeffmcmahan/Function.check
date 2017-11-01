@@ -2,14 +2,14 @@
 
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
-A simple and performant way of declaring and checking types at runtime in javascript.
+A simple and performant way of declaring and checking types at runtime in javascript---without a transpile step.
 
 ```sh
 npm install function.check
 ```
 
 ## Example
-Include the library with `require('function.check')`, and it will define a `Function#check` method, which can be used to check argument arity and types. Declare types using the existing javascript default value syntax, and then pass `arguments` to `<function-name>.check` as shown here:
+Include the library with `require('function.check')`, and it will define a `Function#check` method, which can be used to check argument arity and types. Declare types using the existing javascript default value syntax, and pass `arguments` to `<function-name>.check` as shown here:
 
 ```js
 function newUser(name = String, email = String, age = Number) {
@@ -20,16 +20,16 @@ function newUser(name = String, email = String, age = Number) {
 }
 ```
 
-When they occur, type check failures are clearly indicated:
+Under the hood, the type declarations are compiled to a stack of type check statements, which are invoked by the `.check()` call. Failures are clearly indicated:
 
 ```
-TypeError: newUser(name = String, email = String, age = Number)
+TypeError: newUser(name = String, email = String, age = Number) {...
 
-   name was not of type String. Boolean provided: false
+     - name was not of type String. Boolean provided: false
 
-   email was not of type String. Function provided: function find(query=String) ...
+     - email was not of type String. Function provided: function find(query=String) ...
 
-   age was not provided.
+     - age was not provided.
 
      at newUser (.../index.js:46:14)
      at Object.<anonymous> (.../index.js:85:1)
@@ -40,17 +40,6 @@ TypeError: newUser(name = String, email = String, age = Number)
      at Function.Module._load (module.js:500:3)
      at Function.Module.runMain (module.js:665:10)
 ```
-
-## How it works
-The first time a type checked function runs, the `.check(arguments)` call compiles the list of types to a set of functions which efficiently check the types of the arguments passed. On each subsequent function call, the compiled set of functions is invoked against the given arguments. For a simple case, like `str = String` the check logic is simply:
-
-```js
-val => typeof val === 'string'
-```
-
-Whereas more complex union, generic, and duck types require more complex sets of checks that are, correspondingly, more work to execute.
-
-The type declaration syntax is valid javascript. In standard javascript expressions like `Array[String]` are nonsense amounting to `undefined`, but these are assigned different syntax and semantics within Function#check.
 
 ## Supports all methods and named functions.
 Ordinary named functions as well as async functions, generator functions, and async generator functions are all supported:
@@ -136,6 +125,8 @@ function newUser(name=String, age=Number|String) {
 }
 ```
 
+You can use `null` and `undefined` as well, as in: `name=String|null`.
+
 ## Duck Types
 Duck types are object literals. They can be nested indefinitely, and each propery can be disjoint, generic, or a duck type itself.
 
@@ -171,3 +162,21 @@ Javascript's default values feature cannot be used in combination with a type ch
 The reason for requiring correct arity is simple: it prevents client code from misunderstanding the API it's using. Default values can cause confusion when refactoring, because they tend to make it appear as though client code is more in sync with the API than is actually the case.
 
 To use default values in a function declaration, don't call `<function-name>.check()` within the body.
+
+## How it works
+The first time a type checked function runs, the list of types is compiled to a set of runtime type checks, which efficiently check the types of any arguments passed. The check logic is cached and used for all subsequent checks.
+
+The type declaration syntax is always valid javascript, even if it looks odd when understood as plain javascript. For example, expressions like `Array[String]` are virtual nonsense, and always evaluate to `undefined`, but they are assigned a different interpretation by the type check compiler.
+
+Given the declarations `name=String, age=Number`, the compiler will produce the statements shown below (altered for human readability):
+
+```js
+var e = 0, err = this.check.e;
+if (arguments.length !== 2) err(arguments);
+v = arguments[0];
+if (typeof v !== "string") e++;
+if (e) err(arguments);
+v = arguments[1];
+if (typeof v !== "number" || v + "" === "NaN") e++;
+if (e) err(arguments);
+```
