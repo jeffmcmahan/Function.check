@@ -13,7 +13,7 @@ const typesMap = {
 	Object: 'if(v instanceof Array||!(v instanceof Object))e++;',
 
 	// For Object.create(null):
-	object: 'if(typeof v!=="object"||v===null||(v instanceof Array))e++;'
+	object: 'if(typeof v!=="object"||v===null||v instanceof Array)e++;'
 }
 
 /**
@@ -201,4 +201,4 @@ Object.defineProperty(Function.prototype, 'check', {
 	value: compileCheck
 })
 
-module.exports = {compile}
+module.exports = {compile, types:{}}
