@@ -10,7 +10,10 @@ const typesMap = {
 	Boolean: 'if(typeof v!=="boolean")e++;',
 	String: 'if(typeof v!=="string")e++;',
 	Number: 'if(typeof v!=="number"||v+""==="NaN")e++;',
-	Object: 'if(v instanceof Array||!(v instanceof Object))e++;'
+	Object: 'if(v instanceof Array||!(v instanceof Object))e++;',
+
+	// For Object.create(null):
+	object: 'if(typeof v!=="object"||v===null||(v instanceof Array))e++;'
 }
 
 /**
