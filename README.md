@@ -164,19 +164,6 @@ The reason for requiring correct arity is simple: it prevents client code from m
 To use default values in a function declaration, don't call `<function-name>.check()` within the body.
 
 ## How it works
-The first time a type checked function runs, the list of types is compiled to a set of runtime type checks, which efficiently check the types of any arguments passed. The check logic is cached and used for all subsequent checks.
+The first time a type checked function runs, the list of types is compiled to a set of runtime type checks, which efficiently check the types of any arguments passed. The check logic is cached and used to check the arguments on all subsequent function invocations.
 
 The type declaration syntax is always valid javascript, even if it looks odd when understood as plain javascript. For example, expressions like `Array[String]` are virtual nonsense, and always evaluate to `undefined`, but they are assigned a different interpretation by the type check compiler.
-
-Given the declarations `name=String, age=Number`, the compiler will produce the statements shown below (altered for human readability):
-
-```js
-var e = 0, err = this.check.e;
-if (arguments.length !== 2) err(arguments);
-v = arguments[0];
-if (typeof v !== "string") e++;
-if (e) err(arguments);
-v = arguments[1];
-if (typeof v !== "number" || v + "" === "NaN") e++;
-if (e) err(arguments);
-```
