@@ -85,6 +85,7 @@ function getMessages(checkLogic, __args, failures) {
  Run the checks argument by argument, and find the mismatches.
  - param checkLogic: String
  - param __args: Arguments
+ - returns: Array<Number>
  */
 function findFailures(checkLogic, __args) {
 	const failures = []

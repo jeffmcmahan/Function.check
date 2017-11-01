@@ -41,13 +41,16 @@ assert.throws(
 
 //================================================================ null+undefined ==================
 
+// This may seem like a silly feature, but it's useful when combined with the
+// union types feature, as follows: function (argName=String|null) {...
+
 function nullType(arg=null) {
 	nullType.check(arguments)
 }
 
 assert.doesNotThrow(
 	()=>nullType(null),
-	''
+	'Should not throw when null matches the type declaration.'
 )
 
 function undefType(arg=undefined) {
@@ -56,7 +59,7 @@ function undefType(arg=undefined) {
 
 assert.doesNotThrow(
 	()=>undefType(undefined),
-	''
+	'Should not throw when undefined matches the type declaration.'
 )
 
 //================================================================ Primitives ======================
