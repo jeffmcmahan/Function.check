@@ -7,7 +7,8 @@ function printValueType(value) {
 	if (value === null) return 'null'
 	if (typeof value === 'undefined') return 'undefined'
 	if (typeof value === 'number' && isNaN(value)) return 'NaN'
-	return value.constructor.name
+	if (value.constructor) return value.constructor.name
+	return typeof value
 }
 
 /**
