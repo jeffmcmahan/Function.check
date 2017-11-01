@@ -41,8 +41,8 @@ TypeError: newUser(name = String, email = String, age = Number) {...
      at Function.Module.runMain (module.js:665:10)
 ```
 
-## Supports all methods and named functions.
-Ordinary named functions as well as async functions, generator functions, and async generator functions are all supported:
+## Supports named and anonymous functions.
+Ordinary functions (named or anonymous) as well as async functions, generator functions, and async generator functions are all supported:
 
 ```js
 function newUser(name=String, email=String, zipcode=Number) {
@@ -66,18 +66,33 @@ async function* newUser(name=String, email=String, zipcode=Number) {
 }
 ```
 
-Or, within a class definition (ES5 or ES6-style), use `this.<method-name>` to check arguments: 
+Anonymous functions and methods:
+```js
+const newUser = async function*(name=String, email=String, zipcode=Number) {
+	newUser.check(arguments)
+	//...
+}
+```
+
+Or, within an object or class, use `<namespace>.<method-name>` to check arguments: 
 
 ```js
 class User {
-
 	promote(newRole=String, promotedBy=User) {
 		this.promote.check(arguments)
 		//...
 	}
+}
 
+const ns = {
+	newUser: function (name=String, email=String, zipcode=Number) {
+		ns.newUser.check(arguments)
+		//...
+	}
 }
 ```
+
+**Notice:** Arrow functions are not supported because they do not bind an `arguments` object. Without an `arguments` object, there is no way to determine what was passed.
 
 ## Type Support
 All types available to your function declaration are supported automatically.

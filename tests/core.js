@@ -329,4 +329,38 @@ assert.doesNotThrow(
 	'Should not throw when duck type is satisfied (#2).'
 )
 
+//======================================================================= Function Types ===========
+
+const anonFunc = function (arg=String) {
+	anonFunc.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>anonFunc(''),
+	'Should not throw when anonymous function has correct types passed.'
+)
+
+assert.throws(
+	()=>anonFunc(1),
+	'Should throw when anonymous function has incorrect types passed.'
+)
+
+const ns = {
+	anonMethod: function (arg=String) {
+		ns.anonMethod.check(arguments)
+	}
+}
+
+assert.doesNotThrow(
+	()=>ns.anonMethod(''),
+	'Should not throw when anonymous method has correct types passed.'
+)
+
+assert.throws(
+	()=>ns.anonMethod(1),
+	'Should throw when anonymous method has incorrect types passed.'
+)
+
+//==================================================================================================
+
 console.log('Core tests passed.')

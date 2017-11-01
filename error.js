@@ -46,7 +46,7 @@ function printValue(value) {
 	if (typeof value === 'undefined') return 'undefined'
 	if (typeof value === 'object') return printObject(value)
 	if (typeof value === 'function') {
-		return `function ${value.name}(${getArgsList(value.toString())}) ...`
+		return `function ${value.name}(...) ...`
 	}
 	return value.toString().slice(0,50)
 }
@@ -63,17 +63,35 @@ function printError(funcName, declaration, messages) {
 }
 
 /**
+ Create error messages/descriptions for each failing parameter.
+ - param __args: Arguments
+ - param checkLogic: Object
+ - param failures: Array
+ - returns: Array<String> 
+ */
+function getMessages(checkLogic, __args, failures) {
+	const count = checkLogic.names.length
+	return failures.map(f => {
+		if (f === -1) return `- Bad arity: ${count} parameters required; ${__args.length} passed.`
+		if (f > __args.length-1) return `- ${checkLogic.names[f]} was not provided.`
+		return (
+			`- ${checkLogic.names[f]} was not of type ${checkLogic.types[f]}. `+
+			`${printValueType(__args[f])} passed: ${printValue(__args[f])}`
+		)
+	})
+}
+
+/**
  Run the checks argument by argument, and find the mismatches.
- - param func: Function
  - param checkLogic: String
  - param __args: Arguments
  */
-module.exports = function (func, checkLogic, __args) {
-
-	// Run the checks, one-by-one, to fine the offending parameters.
+function findFailures(checkLogic, __args) {
 	const failures = []
 	const counters = []
-	checks = checkLogic.checks.map((chk, i) => chk.split('err(__args)').join(`failures.push(${i-1})`))
+	checks = checkLogic.checks.map((chk, i) => (
+		chk.split('err(__args)').join(`failures.push(${i-1})`)
+	))
 	for (let i = 0; i <= checkLogic.types.length; i++) {
 		try {
 			eval(checks[i] || '"// No check defined.";')
@@ -81,25 +99,18 @@ module.exports = function (func, checkLogic, __args) {
 			console.log(err)
 		}
 	}
+	return failures
+}
 
-	// Create Error messages for each failing parameter.
-	const argCount = checkLogic.names.length
-	const messages = failures.map(f => {
-		if (f === -1) {
-			return `- Bad arity: ${argCount} parameters required; ${__args.length} passed.`
-		}
-		if (f > __args.length - 1) {
-			return `- ${checkLogic.names[f]} was not provided.`
-		}
-		return (
-			`- ${checkLogic.names[f]} was not of type ${checkLogic.types[f]}. `+
-			`${printValueType(__args[f])} passed: ${printValue(__args[f])}`
-		)
-	})
-
-	// Print a recognizable portion of the function declaration.
+/**
+ Re-checks the arguments to produce an argument-by-argument description of what went wrong.
+ - param func: Function
+ - param checkLogic: String
+ - param __args: Arguments
+ */
+module.exports = function (func, checkLogic, __args) {
+	const failures = findFailures.call(this, checkLogic, __args) // Provide this for eval() calls.
+	const messages = getMessages(checkLogic, __args, failures)
 	const declaration = `${func.name}(${checkLogic.list}) {...`
-
-	// Throw an error with the stack altered for readability.
 	printError(func.name, declaration, messages)
 }
