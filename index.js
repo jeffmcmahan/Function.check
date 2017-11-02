@@ -5,15 +5,12 @@ const g = typeof window !== 'undefined' ? window : global
 const typesMap = {
 	Any: '',
 	null: 'if(v!==null)e++;',
-	undefined: 'if(typeof v!=="undefined")e++;',
 	Function: 'if(typeof v!=="function")e++;',
 	Boolean: 'if(typeof v!=="boolean")e++;',
 	String: 'if(typeof v!=="string")e++;',
 	Number: 'if(typeof v!=="number"||v+""==="NaN")e++;',
 	Object: 'if(v instanceof Array||!(v instanceof Object))e++;',
-
-	// For Object.create(null):
-	object: 'if(typeof v!=="object"||v===null||v instanceof Array)e++;'
+	object: 'if(typeof v!=="object"||v===null||v instanceof Object)e++;'
 }
 
 /**

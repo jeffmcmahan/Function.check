@@ -39,7 +39,7 @@ assert.throws(
 	err => err.message.includes('Too many arguments')
 )
 
-//================================================================ null+undefined ==================
+//==================================================================== null ========================
 
 // This may seem like a silly feature, but it's useful when combined with the
 // union types feature, as follows: function (argName=String|null) {...
@@ -51,15 +51,6 @@ function nullType(arg=null) {
 assert.doesNotThrow(
 	()=>nullType(null),
 	'Should not throw when null matches the type declaration.'
-)
-
-function undefType(arg=undefined) {
-	undefType.check(arguments)
-}
-
-assert.doesNotThrow(
-	()=>undefType(undefined),
-	'Should not throw when undefined matches the type declaration.'
 )
 
 //================================================================ Primitives ======================
@@ -221,28 +212,23 @@ assert.throws(
 	'Should throw when a disjoint type requirement is not met.'
 )
 
-function nullUndef(arg=Object|null, arg2=String|undefined) {
-	nullUndef.check(arguments)
+function nullFunc(arg=Object|null) {
+	nullFunc.check(arguments)
 }
 
 assert.doesNotThrow(
-	()=>nullUndef({}, ''),
+	()=>nullFunc({}),
 	'Should not throw when the non-falsy values are given in disjunctive type checks.'
 )
 
 assert.doesNotThrow(
-	()=>nullUndef(null, ''),
+	()=>nullFunc(null),
 	'Should not throw when a falsy value is given in disjunctively falsy type check. (#1)'
 )
 
-assert.doesNotThrow(
-	()=>nullUndef({}, undefined),
-	'Should not throw when a falsy value is given in disjunctively falsy type check. (#2)'
-)
-
-assert.doesNotThrow(
-	()=>nullUndef(null, undefined),
-	'Should not throw when a falsy value is given in disjunctively falsy type check. (#3)'
+assert.throws(
+	()=>nullFunc(''),
+	'Should throw when neither null nor object is passed as Object|null argument.'
 )
 
 //======================================================================= Lookups ==================
