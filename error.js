@@ -1,3 +1,5 @@
+'use strict'
+
 /**
  Prints a string representing the value.
  - param value: *  
@@ -96,10 +98,11 @@ function getMessages(checkLogic, __args, failures) {
 function findFailures(checkLogic, __args) {
 	const failures = []
 	const counters = []
-	checks = checkLogic.checks.map((chk, i) => (
+	const checks = checkLogic.checks.map((chk, i) => (
 		chk.split('err(__args)').join(`failures.push(${i-1})`)
 	))
 	for (let i = 0; i <= checkLogic.types.length; i++) {
+		let c,f,k,v,e=0
 		try {
 			eval(checks[i] || '"// No check defined.";')
 		} catch (err) {
