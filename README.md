@@ -140,7 +140,7 @@ function newUser(name=String, age=Number|String) {
 }
 ```
 
-You can use `null` and `undefined` as well, as in: `name=String|null`.
+You can use `null` as well, as in: `data=Object|null`, to permit a falsy value. It's probably best to have the calling function pass a type-consistent falsy value (*i.e.,* an empty string for `String`, or 0 for `Number`), and use `null` only as a disjunct for non-primitive values, since cannot not have falsy values.
 
 ## Duck Types
 Duck types are object literals. They can be nested indefinitely, and each propery can be disjoint, generic, or a duck type itself.

@@ -3,6 +3,7 @@
 const error = require('./error')
 const g = typeof window !== 'undefined' ? window : global
 const typesMap = {
+	undefined: 'throw new SyntaxError("Function.check: undefined is not a valid type declaration.");',
 	Any: '',
 	null: 'if(v!==null)e++;',
 	Function: 'if(typeof v!=="function")e++;',
