@@ -219,9 +219,9 @@ Welcome to the type system house of mirrors. The `Object` constructor's `.create
 So, if you don't know whether you'll be getting an Object or an object, the correct way to check it is `arg=Object|object`. That may seem silly, but it is quite correct.
 
 ## How it works
-The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is assembly-like, and executes within a single closure, with no context, as a non-configurable/non-writable method. The thinking goes that the JIT compiler will translate the check logic into machine code exactly once, and then the checks run as if they were written in C.
+The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is low-level, and executes within a single closure as a non-configurable/non-writable method.
 
-You can use `require('function.check').compile(myFunc.toString()).code` to examine the check logic generated, cached, and used at runtime. For example, the following type declarations generate the code shown below:
+Use `require('function.check').compile(myFunc.toString()).code` to examine the check logic. The following type declarations generate the code shown below:
 
 ```js
 function (name=String, age=Number, data=Object|null) {...

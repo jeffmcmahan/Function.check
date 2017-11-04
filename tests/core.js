@@ -53,6 +53,11 @@ assert.doesNotThrow(
 	'Should not throw when null matches the type declaration.'
 )
 
+assert.throws(
+	()=>nullType(undefined),
+	'Should throw when null is required but undefined passed.'
+)
+
 //================================================================ Primitives ======================
 
 function primitives(a=Boolean, b=String, c=Number, d=Array, e=Object, f=Function) {
