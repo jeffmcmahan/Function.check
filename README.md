@@ -153,6 +153,17 @@ function newUser(name=String, age, phone=String) {
 } 
 ```
 
+Or to make it explicit, just define `Any` (doesn't matter what the value is), and use it thus:
+
+```js
+let Any
+
+function newUser(name=String, age=Any, phone=String) {
+	newUser.check(arguments)
+	//...
+} 
+```
+
 ## Disjoint/Union Types
 Use the bitwise single bar operator to describe union types, as in: `Number|Boolean`.
 
@@ -216,7 +227,16 @@ Welcome to the type system house of mirrors. The `Object` constructor's `.create
 1. Declare `Object` and pass `Object.create(null)` 	-> throws
 1. Declare `object` and pass `Object` 				-> throws
 
-So, if you don't know whether you'll be getting an Object or an object, the correct way to check it is `arg=Object|object`. That may seem silly, but it is quite correct.
+So, if you don't know whether you'll be getting an Object or an object, use `arg=Object|object`:
+
+```js
+let object
+
+function processData(data=object|Object) {
+	processData.check(arguments)
+	//...
+}
+```
 
 ## How it works
 The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is low-level, and executes within a single closure as a non-configurable/non-writable method.
@@ -230,6 +250,7 @@ function (name=String, age=Number, data=Object|null) {...
 Generated type check code (beautified):
 
 ```js
+// __args is an alias for arguments
 var v, e = 0, err = this.check.e;
 if (__args.length !== 3) err(__args);
 v = __args[0];
