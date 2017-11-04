@@ -1,4 +1,4 @@
-<img width="200" src="https://raw.githubusercontent.com/jeffmcmahan/Function.check/master/function-check.png"/>
+<img height="200" src="https://raw.githubusercontent.com/jeffmcmahan/Function.check/master/function-check.png"/>
 
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
