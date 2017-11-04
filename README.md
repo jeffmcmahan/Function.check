@@ -192,11 +192,6 @@ Javascript's default values feature cannot be used in combination with a type ch
 
 The reason for requiring correct arity is simple: it prevents client code from misunderstanding the API it's using. Default values can cause confusion when refactoring, because they tend to make it appear as though client code is more in sync with the API than is actually the case.
 
-## How it works
-The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is assembly-like, and executes within a single closure, with no context, as a non-configurable/non-writable method. The thinking goes that the JIT compiler will translate the check logic into machine code exactly once, and then the checks run as if they were written in C.
-
-You can use `require('function.check').compile(myFunc.toString()).code` to examine the check logic generated, cached, and used at runtime.
-
 ## Gotchas
 Because javascript is bizarre about types, some decisions must be made by a type declaration mechanism: should an `Array` instance qualify as on `Object`? In javascript it does, but we all know that's a shame. Is `null` an object or a primitive? Is `NaN` a `Number`? Function.check decides in favor of common sense.
 
@@ -215,3 +210,8 @@ Welcome to the type system house of mirrors. The `Object` constructor's `.create
 1. Declare `object` and pass `Object` 				-> throws
 
 So, if you don't know whether you'll be getting an Object or an object, the correct way to check it is `arg=Object|object`. That may seem silly, but it is quite correct.
+
+## How it works
+The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is assembly-like, and executes within a single closure, with no context, as a non-configurable/non-writable method. The thinking goes that the JIT compiler will translate the check logic into machine code exactly once, and then the checks run as if they were written in C.
+
+You can use `require('function.check').compile(myFunc.toString()).code` to examine the check logic generated, cached, and used at runtime.
