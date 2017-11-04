@@ -4,12 +4,19 @@
 
 Declare and check types at runtime in javascript without a transpile step.
 
+## Install
 ```sh
 npm install function.check
 ```
 
+Include at the top of your program:
+
+```js
+require('function.check')`
+```
+
 ## Example
-`require('function.check')` at the top of your program. Declare argument types using ES6 default value syntax, pass `arguments` to `<function-name>.check` as shown:
+Declare argument types using ES6 default value syntax and pass `arguments` to `<function-name>.check` as shown:
 
 ```js
 function newUser(name = String, email = String, age = Number) {
