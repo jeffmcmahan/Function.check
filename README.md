@@ -221,4 +221,26 @@ So, if you don't know whether you'll be getting an Object or an object, the corr
 ## How it works
 The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is assembly-like, and executes within a single closure, with no context, as a non-configurable/non-writable method. The thinking goes that the JIT compiler will translate the check logic into machine code exactly once, and then the checks run as if they were written in C.
 
-You can use `require('function.check').compile(myFunc.toString()).code` to examine the check logic generated, cached, and used at runtime.
+You can use `require('function.check').compile(myFunc.toString()).code` to examine the check logic generated, cached, and used at runtime. For example, the following type declarations generate the code shown below:
+
+```js
+function (name=String, age=Number, data=Object|null) {...
+```
+
+Generated type check code (beautified):
+
+```js
+var v, e = 0, err = this.check.e;
+if (__args.length !== 3) err(__args);
+v = __args[0];
+if (typeof v !== "string") e++;
+if (e) err(__args);
+v = __args[1];
+if (typeof v !== "number" || v + "" === "NaN") e++;
+if (e) err(__args);
+v = __args[2];
+if (v instanceof Array || !(v instanceof Object)) e++;
+if (v !== null) e++;
+if (e < 2) e = 0;
+if (e) err(__args);
+```
