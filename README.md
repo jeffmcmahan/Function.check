@@ -1,4 +1,4 @@
-# Function.check
+![Function.check](https://raw.githubusercontent.com/jeffmcmahan/Function.check/master/function-check.png)
 
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
