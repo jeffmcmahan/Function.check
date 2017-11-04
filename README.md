@@ -1,8 +1,8 @@
-<img src="https://raw.githubusercontent.com/jeffmcmahan/Function.check/master/function-check.svg" width="244.5" height="261">
+# Function.check
 
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
-A simple and performant way of declaring and checking types at runtime in javascript---without a transpile step.
+Declaring and check types at runtime in javascript without a transpile step.
 
 ```sh
 npm install function.check
