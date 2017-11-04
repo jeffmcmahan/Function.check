@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/jeffmcmahan/Function.check/issues"
   },
-  "homepage": "https://github.com/jeffmcmahan/Function.check#readme"
+  "homepage": "https://github.com/jeffmcmahan/Function.check#readme",
+  "devDependencies": {
+    "benchmark": "^2.1.4"
+  }
 }

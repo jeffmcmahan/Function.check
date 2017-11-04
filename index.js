@@ -191,7 +191,7 @@ function compileCheck(__args) {
 	check(__args)
 }
 
-// Making property non-configurable/writable may help the JIT compiler?
+// Making property non-configurable/writable may help the JIT compiler.
 Object.defineProperty(Function.prototype, 'check', {
 	configurable: false,
 	enumerable: false,

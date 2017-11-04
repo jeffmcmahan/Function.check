@@ -41,8 +41,24 @@ TypeError: newUser(name = String, email = String, age = Number) {...
      at Function.Module.runMain (module.js:665:10)
 ```
 
+## Performance
+Benchmark.js indicates that Function.check is *quite* fast (see /tests/benchmark.js):
+
+```
+unions 			x 154,604,016 ops/sec 	±0.75% 	(93 runs sampled)
+arrays 			x 151,521,044 ops/sec 	±0.67% 	(90 runs sampled)
+primitives 		x 150,545,643 ops/sec 	±0.56% 	(92 runs sampled)
+objects 		x 105,305,880 ops/sec 	±0.75% 	(86 runs sampled)
+duck types 		x  95,785,643 ops/sec 	±0.71% 	(89 runs sampled)
+custom classes 	x  30,297,449 ops/sec 	±0.70% 	(91 runs sampled)
+generics 		x   6,280,304 ops/sec 	±0.73% 	(93 runs sampled)
+
+Mid-2014 15" MacBook Pro
+Node 9.0.0
+```
+
 ## Supports named and anonymous functions.
-Ordinary functions (named or anonymous) as well as async functions, generator functions, and async generator functions are all supported:
+Ordinary functions and methods as well as async functions, generator functions, and async generator functions are all supported:
 
 ```js
 function newUser(name=String, email=String, zipcode=Number) {
@@ -66,7 +82,7 @@ async function* newUser(name=String, email=String, zipcode=Number) {
 }
 ```
 
-Anonymous functions and methods:
+Anonymous functions:
 ```js
 const newUser = async function*(name=String, email=String, zipcode=Number) {
 	newUser.check(arguments)
@@ -74,7 +90,7 @@ const newUser = async function*(name=String, email=String, zipcode=Number) {
 }
 ```
 
-Or, within an object or class, use `<namespace>.<method-name>` to check arguments: 
+To check a method's arguments, use `<namespace>.<method-name>` to check arguments: 
 
 ```js
 class User {
@@ -92,7 +108,7 @@ const ns = {
 }
 ```
 
-**Notice:** Arrow functions are not supported because they do not bind an `arguments` object. Without an `arguments` object, there is no way to determine what was passed.
+**Notice:** Arrow functions are not supported because they do not bind an `arguments` object.
 
 ## Type Support
 All types available to your function declaration are supported automatically.
@@ -176,9 +192,26 @@ Javascript's default values feature cannot be used in combination with a type ch
 
 The reason for requiring correct arity is simple: it prevents client code from misunderstanding the API it's using. Default values can cause confusion when refactoring, because they tend to make it appear as though client code is more in sync with the API than is actually the case.
 
-To use default values in a function declaration, don't call `<function-name>.check()` within the body.
-
 ## How it works
-The first time a type checked function runs, the list of types is compiled to a set of runtime type checks, which efficiently check the types of any arguments passed. The check logic is cached and used to check the arguments on all subsequent function invocations.
+The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is assembly-like, and executes within a single closure, with no context, as a non-configurable/non-writable method. The thinking goes that the JIT compiler will translate the check logic into machine code exactly once, and then the checks run as if they were written in C.
 
-The type declaration syntax is always valid javascript, even if it looks odd when understood as plain javascript. For example, expressions like `Array[String]` are virtual nonsense, and always evaluate to `undefined`, but they are assigned a different interpretation by the type check compiler.
+You can use `require('function.check').compile(myFunc.toString()).code` to examine the check logic generated, cached, and used at runtime.
+
+## Gotchas
+Because javascript is bizarre about types, some decisions must be made by a type declaration mechanism: should an `Array` instance qualify as on `Object`? In javascript it does, but we all know that's an shame. Is `null` an object or a primitive? Is `NaN` a `Number`? Function.check decides in favor of common sense.
+
+Three arguable decisions are made by Function.check:
+
+1. Declare `Number` and pass `NaN` 		-> throws
+1. Declare `Object` and pass `null` 	-> throws
+1. Declare `object` and pass `null`		-> pass
+1. Declare `Object` and pass `Array` 	-> throws
+1. Declare `object` and pass `Array`	-> pass
+
+### `Object.create(null)` & the `object` type
+Welcome to the type system house of mirrors. The `Object` constructor's `.create` method can be used to create objects that are not `Object` instances, and have no prototype. These are actually a primitive dictionary/map, but javascript's `typeof` operator doesn't recognize the difference. In many situations this is useful, but it inhibits plain reasoning about the type system.
+
+1. Declare `Object` and pass `Object.create(null)` 	-> throws
+1. Declare `object` and pass `Object` 				-> throws
+
+So, if you don't know whether you'll be getting an Object or an object, the correct way to check it is `arg=Object|object`. That may seem silly, but it is quite correct.
