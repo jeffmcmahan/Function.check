@@ -2,14 +2,14 @@
 
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
-Declaring and check types at runtime in javascript without a transpile step.
+Declare and check types at runtime in javascript without a transpile step.
 
 ```sh
 npm install function.check
 ```
 
 ## Example
-Include the library with `require('function.check')`, and it will define a `Function#check` method, which can be used to check argument arity and types. Declare types using the existing javascript default value syntax, and pass `arguments` to `<function-name>.check` as shown here:
+`require('function.check')` at the top of your program. Declare argument types using ES6 default value syntax, pass `arguments` to `<function-name>.check` as shown:
 
 ```js
 function newUser(name = String, email = String, age = Number) {
@@ -20,7 +20,7 @@ function newUser(name = String, email = String, age = Number) {
 }
 ```
 
-Under the hood, the type declarations are compiled to a stack of type check statements, which are invoked by the `.check()` call. Failures are clearly indicated:
+Failures are clearly indicated:
 
 ```
 TypeError: newUser(name = String, email = String, age = Number) {...

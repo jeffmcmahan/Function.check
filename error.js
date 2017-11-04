@@ -61,10 +61,12 @@ function printValue(value) {
 
 function printError(funcName, declaration, messages) {
 	const error = new TypeError('') // We'll totally rework this.
-	const stack = []
-	error.stack.toString().split('\n').forEach(s=> {
-		if (stack.length || s.includes(funcName)) stack.push(s)
-	})
+	let stack = error.stack.toString().split('\n')
+	let start = 0
+	for (let i = 0; i < stack.length; i++) {
+		if (stack[i].includes('compileCheck')) start = i + 1
+	}
+	stack = stack.slice(start)
 	error.message = `${declaration}\n\n    ${messages.join('\n\n    ')}\n\n${stack.join('\n')}\n`
 	error.stack = ''
 	throw error
@@ -121,6 +123,6 @@ function findFailures(checkLogic, __args) {
 module.exports = function (func, checkLogic, __args) {
 	const failures = findFailures.call(this, checkLogic, __args) // Provide this for eval() calls.
 	const messages = getMessages(checkLogic, __args, failures)
-	const declaration = `${func.name}(${checkLogic.list}) {...`
+	const declaration = `${func.name || 'anonymous'}(${checkLogic.list}) {...`
 	printError(func.name, declaration, messages)
 }
