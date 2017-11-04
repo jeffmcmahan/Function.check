@@ -198,9 +198,9 @@ The first time a checked function runs, the list of types is compiled to optimiz
 You can use `require('function.check').compile(myFunc.toString()).code` to examine the check logic generated, cached, and used at runtime.
 
 ## Gotchas
-Because javascript is bizarre about types, some decisions must be made by a type declaration mechanism: should an `Array` instance qualify as on `Object`? In javascript it does, but we all know that's an shame. Is `null` an object or a primitive? Is `NaN` a `Number`? Function.check decides in favor of common sense.
+Because javascript is bizarre about types, some decisions must be made by a type declaration mechanism: should an `Array` instance qualify as on `Object`? In javascript it does, but we all know that's a shame. Is `null` an object or a primitive? Is `NaN` a `Number`? Function.check decides in favor of common sense.
 
-Three arguable decisions are made by Function.check:
+Decisions made by Function.check:
 
 1. Declare `Number` and pass `NaN` 		-> throws
 1. Declare `Object` and pass `null` 	-> throws
