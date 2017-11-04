@@ -12,7 +12,7 @@ npm install function.check
 Include at the top of your program:
 
 ```js
-require('function.check')`
+require('function.check')
 ```
 
 ## Example
