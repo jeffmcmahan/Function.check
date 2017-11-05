@@ -2,7 +2,7 @@
 
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
-Declare and types in javascript without a transpile step.
+Declare types in javascript without a transpile step.
 
 ## Install
 ```sh
