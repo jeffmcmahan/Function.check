@@ -3,15 +3,17 @@
 const error = require('./error')
 const g = typeof window !== 'undefined' ? window : global
 const typesMap = {
-	undefined: 'throw new SyntaxError("Function.check: undefined is not a valid type declaration.");',
-	Any: '',
-	null: 'if(v!==null)e++;',
-	Function: 'if(typeof v!=="function")e++;',
-	Boolean: 'if(typeof v!=="boolean")e++;',
-	String: 'if(typeof v!=="string")e++;',
-	Number: 'if(typeof v!=="number"||v+""==="NaN")e++;',
-	Object: 'if(v instanceof Array||!(v instanceof Object))e++;',
-	object: 'if(typeof v!=="object"||v===null||v instanceof Object)e++;'
+	Any: 		'',
+	arguments: 	'if(typeof v!=="object"||v+""!=="[object Arguments]")e++;',
+	Array: 		'if(!Array.isArray(v))e++;',
+	Boolean: 	'if(typeof v!=="boolean")e++;',
+	Function: 	'if(typeof v!=="function")e++;',
+	null: 		'if(v!==null)e++;',
+	Number: 	'if(typeof v!=="number"||v+""==="NaN")e++;',
+	Object: 	'if(Array.isArray(v)||!(v instanceof Object))e++;',
+	object: 	'if(typeof v!=="object"||v===null||v instanceof Object)e++;',
+	String: 	'if(typeof v!=="string")e++;',
+	undefined:  'throw new SyntaxError("Function.check: undefined is not a valid type declaration.");'
 }
 
 /**

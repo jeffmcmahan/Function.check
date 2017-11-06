@@ -55,7 +55,7 @@ Benchmark.js indicates that Function.check is *quite* fast (see /tests/benchmark
 unions 			x 154,604,016 ops/sec 	±0.75% 	(93 runs sampled)
 arrays 			x 151,521,044 ops/sec 	±0.67% 	(90 runs sampled)
 primitives 		x 150,545,643 ops/sec 	±0.56% 	(92 runs sampled)
-objects 		x 105,305,880 ops/sec 	±0.75% 	(86 runs sampled)
+objects 		x 132,546,437 ops/sec 	±0.75% 	(86 runs sampled)
 duck types 		x  95,785,643 ops/sec 	±0.71% 	(89 runs sampled)
 custom classes 	x  30,297,449 ops/sec 	±0.70% 	(91 runs sampled)
 generics 		x   6,280,304 ops/sec 	±0.73% 	(93 runs sampled)
@@ -217,7 +217,7 @@ Decisions made by Function.check:
 
 1. Declare `Number` and pass `NaN` 		-> throws
 1. Declare `Object` and pass `null` 	-> throws
-1. Declare `object` and pass `null`		-> pass
+1. Declare `object` and pass `null`		-> throws
 1. Declare `Object` and pass `Array` 	-> throws
 1. Declare `object` and pass `Array`	-> pass
 

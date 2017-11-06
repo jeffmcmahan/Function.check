@@ -58,6 +58,24 @@ assert.throws(
 	'Should throw when null is required but undefined passed.'
 )
 
+//================================================================ arguments =======================
+
+const argsObj = (function () {return arguments})()
+
+function argsObject(args=arguments) {
+	argsObject.check(arguments)
+}
+
+assert.throws(
+	()=>argsObject({}),
+	'Should throw when non-arguments object is passed to func requiring arguments.'
+)
+
+assert.doesNotThrow(
+	()=>argsObject(argsObj),
+	'Should not throw when arguments passed and arguments required.'
+)
+
 //================================================================ Primitives ======================
 
 function primitives(a=Boolean, b=String, c=Number, d=Array, e=Object, f=Function) {
