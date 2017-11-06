@@ -260,7 +260,7 @@ v = __args[1];
 if (typeof v !== "number" || v + "" === "NaN") e++;
 if (e) err(__args);
 v = __args[2];
-if (v instanceof Array || !(v instanceof Object)) e++;
+if (Array.isArray(v) || !(v instanceof Object)) e++;
 if (v !== null) e++;
 if (e < 2) e = 0;
 if (e) err(__args);
