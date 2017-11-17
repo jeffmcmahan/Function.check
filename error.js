@@ -9,7 +9,7 @@ function printValueType(value) {
 	if (value === null) return 'null'
 	if (typeof value === 'undefined') return 'undefined'
 	if (typeof value === 'number' && isNaN(value)) return 'NaN'
-	if ('' + value === '[object Arguments]') return 'arguments'
+	if (value.toString && '' + value === '[object Arguments]') return 'arguments'
 	if (value.constructor) return value.constructor.name
 
 	// objects created with Object.create(null)

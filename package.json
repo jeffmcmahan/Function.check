@@ -1,6 +1,6 @@
 {
   "name": "function.check",
-  "version": "0.8.4",
+  "version": "0.8.5",
   "description": "Runtime type checking in plain javascript",
   "main": "index.js",
   "directories": {
