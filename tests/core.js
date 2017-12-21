@@ -173,6 +173,22 @@ assert.throws(
 	'Should throw when Custom is required, but a plain Object is passed.'
 )
 
+class Custom2 {
+	constructor(a=Number) {
+		Custom2.check(arguments)
+	}
+}
+
+assert.doesNotThrow(
+	()=> new Custom2(5),
+	'Should not throw when constructor declaration matches passed parameter.'
+)
+
+assert.throws(
+	()=> new Custom2('5'),
+	'Should throw when constructor declaration does not match the passed parameter.'
+)
+
 //==================================================================== Superclasses ================
 
 class CustomObject extends Object {}

@@ -115,6 +115,16 @@ const ns = {
 }
 ```
 
+Constructors are supported, too:
+```js
+class User {
+	constructor(name=String, email=String, zipcode=Number) {
+		User.check(arguments)
+		//...
+	}
+}
+```
+
 **Notice:** Arrow functions are not supported because they do not bind an `arguments` object.
 
 ## Type Support
