@@ -163,7 +163,7 @@ function compile(src) {
 		'var c,f,k,v,e=0,err=this.check.e;' +
 		`if(__args.length!==${types.length})err(__args);`,
 	]
-	const names = types.map(type => type.split('=')[0])
+	const names = types.map(type => type.split('=')[0].trim())
 	types = types.map(type => (type.split('=')[1] || 'Any').split(".").pop())
 	types.forEach((type, i) => (
 		checks.push(
