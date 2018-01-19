@@ -1,8 +1,9 @@
-.DS_Store
 node_modules
-.gitignore
 tests
+site
+.DS_Store
+.gitignore
 *.yml
 *.png
-.benchmarks.js
+package-lock.json
 package-lock.json
