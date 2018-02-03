@@ -86,12 +86,14 @@ function duckTypeCheck(typeName, counters) {
 function namedTypeCheck(type) {
 	if (type in g) return `if (!(v instanceof ${type}))e++;`
 	return (
-		'c=v.constructor;'+
 		'f=1;'+
-		'while(c){'+
-			`if(c.name==='${type}'){f=0;break};`+
-			'if(c.constructor===c){e++;break};'+
-			'c=c.__proto__;'+
+		'if(v!==undefined&&v!==null) {'+
+			'c=v.constructor;'+
+			'while(c){'+
+				`if(c.name==='${type}'){f=0;break};`+
+				'if(c.constructor===c){e++;break};'+
+				'c=c.__proto__;'+
+			'}'+
 		'}'+
 		'if(f)e++;'
 	)
