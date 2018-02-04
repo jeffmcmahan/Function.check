@@ -1,3 +1,5 @@
+# Function#check
+
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
 Declare types in javascript without a transpile step.
