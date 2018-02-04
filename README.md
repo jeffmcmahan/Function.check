@@ -1,5 +1,3 @@
-<img height="100" src="https://raw.githubusercontent.com/jeffmcmahan/Function.check/master/function-check.png"/>
-
 ![travis status](https://travis-ci.org/jeffmcmahan/Function.check.svg?branch=master)
 
 Declare types in javascript without a transpile step.
