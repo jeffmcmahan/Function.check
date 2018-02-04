@@ -12,8 +12,8 @@ function printValueType(value) {
 	if (value.toString && '' + value === '[object Arguments]') return 'arguments'
 	if (value.constructor) return value.constructor.name
 
-	// objects created with Object.create(null)
-	if (typeof value === 'object' && !value.constructor) return 'object (no prototype)'
+	// values created with Object.create(null) are of type 'dictionary'
+	if (typeof value === 'object' && !value.constructor) return 'dictionary'
 
 	// Should never happen, but just in case...
 	return typeof value
@@ -85,10 +85,11 @@ function getMessages(checkLogic, __args, failures) {
 	return failures.map(f => {
 		if (f === -1) return `- Bad arity: ${count} parameters required; ${__args.length} passed.`
 		if (f > __args.length-1) return `- ${checkLogic.names[f]} was not provided.`
-		return (
-			`- ${checkLogic.names[f]} was not of type ${checkLogic.types[f]}. `+
-			`${printValueType(__args[f])} passed: ${printValue(__args[f])}`
-		)
+		const problem = `- ${checkLogic.names[f]} was not of type ${checkLogic.types[f]}. `
+		const passed = __args[f] === undefined || __args[f] === null
+			? printValueType(__args[f]) + ' passed.'
+			: `${printValueType(__args[f])} passed: ${printValue(__args[f])}`
+		return problem + passed
 	})
 }
 
@@ -124,6 +125,6 @@ function findFailures(checkLogic, __args) {
 module.exports = function (func, checkLogic, __args) {
 	const failures = findFailures.call(this, checkLogic, __args) // Provide this for eval() calls.
 	const messages = getMessages(checkLogic, __args, failures)
-	const declaration = `${func.name || 'anonymous'}(${checkLogic.list}) {...`
+	const declaration = `\n\n${func.name || 'anonymous'}(${checkLogic.list}) { ...`
 	printError(func.name, declaration, messages)
 }

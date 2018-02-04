@@ -74,6 +74,38 @@ assert.throws(
 	'Should not print stack information about the type checker itself.'
 )
 
+//=============================================================== Declaration ======================
+
+function declaration(
+	a=String, // in-line comment
+	/* Enclosed comment */ b=Number
+) {
+	declaration.check(arguments)
+}
+
+assert.throws(()=>declaration(5, ''), e=>e.message.includes(`
+	a=String, // in-line comment
+	/* Enclosed comment */ b=Number
+`), 'The declaration should not be altered; leave comments, whitespace, as is.')
+
+//============================================================= Non-redundant "passed" =============
+
+function nonRedundant(a=String) {
+	nonRedundant.check(arguments)
+}
+
+assert.throws(
+	()=>nonRedundant(undefined),
+	e=>e.message.includes('undefined passed.'),
+	'Should not say "undefined passed: undefined".'
+)
+
+assert.throws(
+	()=>nonRedundant(null),
+	e=>e.message.includes('null passed.'),
+	'Should not say "null passed: null".'
+)
+
 // @todo Union type errors.
 // @todo Duck type errors.
 // @todo Generis need generic-style type names: "... Array[Mixed] passed: [1, 'Joe', ..."
