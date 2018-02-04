@@ -2,18 +2,24 @@
 
 const error = require('./error')
 const g = typeof window !== 'undefined' ? window : global
+
 const typesMap = {
-	Any: 		'',
-	arguments: 	'if(typeof v!=="object"||v+""!=="[object Arguments]")e++;',
+	ANY_TYPE: 	'',
 	Array: 		'if(!Array.isArray(v))e++;',
+	'~Array': 	'if(typeof v!=="object"||v===null||!("length" in v))e++;',
 	Boolean: 	'if(typeof v!=="boolean")e++;',
 	Function: 	'if(typeof v!=="function")e++;',
 	null: 		'if(v!==null)e++;',
+	NaN:		'if(typeof v==="number"&&!isNaN(v))e++;',
 	Number: 	'if(typeof v!=="number"||v+""==="NaN")e++;',
 	Object: 	'if(Array.isArray(v)||!(v instanceof Object))e++;',
-	object: 	'if(typeof v!=="object"||v===null||v instanceof Object)e++;',
+	'~Object':	'if(typeof v!=="object"||v===null||v.constructor)e++;',
 	String: 	'if(typeof v!=="string")e++;',
-	undefined:  'throw new SyntaxError("Function.check: undefined is not a valid type declaration.");'
+	undefined: 	'if(typeof v!=="undefined")e++;'
+}
+
+function myFuncName(name=~Array, data=~Object) {
+	myFuncName.check(arguments)
 }
 
 /**
@@ -32,15 +38,16 @@ function getArgsList(src) {
 		if (src[pos] === ')') depth--
 		if (src[pos] === '(') depth++
 	}
-	return src.slice(start, pos).trim()
+	return src.slice(start, pos)
 }
 
-/**
- Generates a function which resursively checks the type of a single value,
- ensuring that it matches the semantics of the given generic type.
- - param typeName: String
- - returns: Function
- */
+/*
+Generates a function which resursively checks the type of a single value,
+ensuring that it matches the semantics of the given generic type.
+- param typeName: String
+- param counters: Array
+- returns: Function
+*/
 function genericTypeCheck(typeName, counters) {
 	const superName = typeName.slice(0, typeName.indexOf('['))
 	const superCheck = getTypeChecks(superName, counters).join('')
@@ -53,7 +60,6 @@ function genericTypeCheck(typeName, counters) {
 	const keys = 'k' + id
 	return [
 		superCheck,
-		'if(e)err(__args);',
 		`var ${i},${len},${keys},${copy};`,
 		`${keys}=Object.keys(v);`,
 		`${len}=${keys}.length;`,
@@ -62,11 +68,12 @@ function genericTypeCheck(typeName, counters) {
 	].join('')
 }
 
-/**
- Generates a function which resursively checks the type of a single value,
- ensuring that it matches the semantics of the given duck type.
- - param typeName: String
- - returns: Function
+/*
+Generates a function which resursively checks the type of a single value,
+ensuring that it matches the semantics of the given duck type.
+- param typeName: String
+- param counters: Array
+- returns: Function
  */
 function duckTypeCheck(typeName, counters) {
 	const propsList = splitBy(',', typeName.slice(1, -1))
@@ -83,6 +90,12 @@ function duckTypeCheck(typeName, counters) {
 	return checks.join('')
 }
 
+/*
+Generates a nominal type check: the value's constructor name, or one of the
+value's prototype ancestor's name must match the given type string.
+- param type: String
+- returns: String
+*/
 function namedTypeCheck(type) {
 	if (type in g) return `if (!(v instanceof ${type}))e++;`
 	return (
@@ -99,12 +112,13 @@ function namedTypeCheck(type) {
 	)
 }
 
-/**
- Generates a function which resursively checks the type of a single value,
- ensuring that it matches the semantics of the given typeName.
- - param typeName: String
- - returns: Function
- */
+/*
+Generates a function which resursively checks the type of a single value,
+ensuring that it matches the semantics of the given typeName.
+- param typeName: String
+- param counters: Array
+- returns: Function
+*/
 function getTypeCheck(typeName, counters) {
 	if (typeName in typesMap) return typesMap[typeName]
 	if (typeName.slice(-1)[0] === ']') return genericTypeCheck(typeName, counters)
@@ -112,12 +126,13 @@ function getTypeCheck(typeName, counters) {
 	return namedTypeCheck(typeName)
 }
 
-/**
- Generates a single function that recursively checks the type of a value to
- ensure that it matches the semantics of the given typeName.
- - param typeName: String
- - returns: Array<String>
- */
+/*
+Generates a single function that recursively checks the type of a value to
+ensure that it matches the semantics of the given typeName.
+- param typeName: String
+- param counters: Array
+- returns: Array<String>
+*/
 function getTypeChecks(typeName, counters) {
 	const disjuncts = splitBy('|', typeName).map(type => getTypeCheck(type, counters))
 	if (disjuncts.length > 1) {
@@ -126,11 +141,12 @@ function getTypeChecks(typeName, counters) {
 	return disjuncts
 }
 
-/**
- Segments the arguments list, without messing with embedded objects.
- - param list: String
- - returns: Array<String>
- */
+/*
+Splits a string by the given delimiter, but respects curly bracket scope.
+- param delimiter: String
+- param list: String
+- returns: Array<String>
+*/
 function splitBy(delimiter, list) {
 	let depth = 0
 	let pos = 0
@@ -144,29 +160,65 @@ function splitBy(delimiter, list) {
 	bounds.push(list.length)
 	const split = bounds
 		.map((bound, pos) => {
-			const prevBound = pos ? bounds[pos - 1] + 1 : 0
+			const prevBound = pos ? bounds[pos-1] + 1 : 0
 			return list.slice(prevBound, bound).trim()
 		})
 		.filter(s=>s)
 	return split
 }
 
-/**
- Compiles a set of type check statements for type declarations given in the
- function source string.
- - param src: String
- - returns: Object
- */
+/*
+Removes both single-line and enclosed comments from the list.
+- param list: String --- the parameters list
+- returns: String
+*/
+function removeComments(list) {
+	let pos = 0
+	let inComment = false
+	let commentStart = null
+	let commentOpen = null
+	const open = ['//', '/*']
+	while(pos < list.length) {
+		const current = list[pos]
+		const peek = current + list[pos+1]
+		if (!inComment && open.includes(peek)) {
+			inComment = true
+			commentStart = pos
+			commentOpen = peek
+		}
+		if (inComment) {
+			if (commentOpen === '/*' && peek === '*/') {
+				list = list.slice(0, commentStart) + list.slice(pos + 2)
+				pos = commentStart
+				inComment = false
+			}
+			if (commentOpen === '//' && current === '\n') {
+				list = list.slice(0, commentStart) + list.slice(pos)
+				pos = commentStart
+				inComment = false
+			}
+		}
+		pos++
+	}
+	return list
+}
+
+/*
+Compiles a set of type check statements for type declarations given in the
+function source string.
+- param src: String
+- returns: Object
+*/
 function compile(src) {
 	const list = getArgsList(src)
-	let types = splitBy(',', list)
+	let types = splitBy(',', removeComments(list))
 	const counters = []
 	const checks = [
 		'var c,f,k,v,e=0,err=this.check.e;' +
 		`if(__args.length!==${types.length})err(__args);`,
 	]
 	const names = types.map(type => type.split('=')[0].trim())
-	types = types.map(type => (type.split('=')[1] || 'Any').split(".").pop())
+	types = types.map(type => (type.split('=')[1] || 'ANY_TYPE').split(".").pop())
 	types.forEach((type, i) => (
 		checks.push(
 			`v=__args[${i}];` +
@@ -177,11 +229,11 @@ function compile(src) {
 	return {checks, list, names, types, code:checks.join('')}
 }
 
-/**
- Replaces this.check with a new function which is a compiled set of type
- check statemnets (no function calls).
- - param __args: Object<Arguments>
- */
+/*
+Replaces this.check with a new function which is a compiled set of type
+check statemnets (no function calls).
+- param __args: Object<Arguments>
+*/
 function compileCheck(__args) {
 	const logic = compile(this.toString())
 	const check = Function('__args', logic.code).bind(this)
@@ -195,7 +247,7 @@ function compileCheck(__args) {
 	check(__args)
 }
 
-// Making property non-configurable/writable may help the JIT compiler.
+// Make the .check property non-configurable and non-writable.
 Object.defineProperty(Function.prototype, 'check', {
 	configurable: false,
 	enumerable: false,
@@ -203,4 +255,4 @@ Object.defineProperty(Function.prototype, 'check', {
 	value: compileCheck
 })
 
-module.exports = {compile, types:{}}
+module.exports = {compile}

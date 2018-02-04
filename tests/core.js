@@ -39,10 +39,44 @@ assert.throws(
 	err => err.message.includes('Too many arguments')
 )
 
-//==================================================================== null ========================
+//==================================================================== Any =========================
 
-// This may seem like a silly feature, but it's useful when combined with the
-// union types feature, as follows: function (argName=String|null) {...
+function anyType(a) {
+	anyType.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>anyType(0),
+	'Should not throw when any is declared and arity is correct.'
+)
+
+assert.throws(
+	()=>anyType(),
+	'Should throw when any is declared and arity is incorrect.'
+)
+
+//==================================================================== ~Object =====================
+
+function anonymousType(a=~Object) {
+	anonymousType.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>anonymousType(Object.create(null)),
+	'Should not throw when Any is declared and arity is correct.'
+)
+
+assert.throws(
+	()=>anonymousType({}),
+	'Should throw when Any is declared and arity is incorrect.'
+)
+
+assert.throws(
+	()=>anonymousType(null),
+	'Should throw when Any is declared and arity is incorrect.'
+)
+
+//==================================================================== null ========================
 
 function nullType(arg=null) {
 	nullType.check(arguments)
@@ -58,11 +92,32 @@ assert.throws(
 	'Should throw when null is required but undefined passed.'
 )
 
+//==================================================================== undefined ===================
+
+function undefType(arg=undefined) {
+	undefType.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>undefType(undefined),
+	'Should not throw when undefined matches the type declaration.'
+)
+
+assert.throws(
+	()=>undefType(null),
+	'Should throw when undefined is required but null passed.'
+)
+
+assert.throws(
+	()=>undefType(),
+	'Should throw when undefined is required but nothing is passed.'
+)
+
 //================================================================ arguments =======================
 
 const argsObj = (function () {return arguments})()
 
-function argsObject(args=arguments) {
+function argsObject(args=~Array) {
 	argsObject.check(arguments)
 }
 
@@ -318,6 +373,20 @@ assert.throws(
 	'Should throw when the nested generic type is not satisfied.'
 )
 
+function genericArrDisjunct(names=String|Array[String]) {
+	genericArrDisjunct.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>genericArrDisjunct(['foo', 'bar']),
+	'Should not throw when iterable properties satisfy generic type.'
+)
+
+assert.doesNotThrow(
+	()=>genericArrDisjunct('foo'),
+	'Should not throw when primitive disjunct type is satisfied.'
+)
+
 function objGeneric(data=Object[String]) {
 	objGeneric.check(arguments)
 }
@@ -329,6 +398,36 @@ assert.doesNotThrow(
 
 assert.throws(
 	()=>objGeneric({prop1:'', prop2:4}),
+	'Should throw when iterable properties do not satisfy generic type.'
+)
+
+class MyGenericClass {
+	constructor() {
+		this.prop1 = ''
+		this.prop2 = ''
+	}
+}
+
+const goodValue = new MyGenericClass
+const badValue = new MyGenericClass
+badValue.prop1 = 0
+
+function customGeneric(data=MyGenericClass[String]) {
+	customGeneric.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>customGeneric(goodValue),
+	'Should not throw when iterable properties satisfy generic type.'
+)
+
+assert.throws(
+	()=>customGeneric(badValue),
+	'Should throw when iterable properties do not satisfy generic type.'
+)
+
+assert.throws(
+	()=>customGeneric({prop1:'', prop2:4}),
 	'Should throw when iterable properties do not satisfy generic type.'
 )
 
@@ -389,6 +488,25 @@ assert.throws(
 	'Should throw when anonymous method has incorrect types passed.'
 )
 
-//==================================================================================================
+//====================================================================== Commented =================
+
+function comments(
+	a= /* hi there */ Number, 	// comment 1
+	b=String // comment 2
+	// /* Yo. */
+	/* // Yo. */
+) {
+	comments.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>comments(5, ''),
+	'Should not throw when commented declaration types match values passed.'
+)
+
+assert.throws(
+	()=>comments('', 5),
+	'Should throw when commented declaration types do not match values passed.'
+)
 
 console.log('Core tests passed.')
