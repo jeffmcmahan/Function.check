@@ -220,34 +220,6 @@ Javascript's default values feature cannot be used in combination with a type ch
 
 The reason for requiring correct arity is simple: it prevents client code from misunderstanding the API it's using. Default values can cause confusion when refactoring, because they tend to make it appear as though client code is more in sync with the API than is actually the case.
 
-## Gotchas
-Because javascript is bizarre about types, some decisions must be made by a type declaration mechanism: should an `Array` instance qualify as on `Object`? In javascript it does, but we all know that's a shame. Is `null` an object or a primitive? Is `NaN` a `Number`? Function.check decides in favor of common sense.
-
-Decisions made by Function.check:
-
-1. Declare `Number` and pass `NaN` 		-> throws
-1. Declare `Object` and pass `null` 	-> throws
-1. Declare `object` and pass `null`		-> throws
-1. Declare `Object` and pass `Array` 	-> throws
-1. Declare `object` and pass `Array`	-> pass
-
-### `Object.create(null)` & the `object` type
-Welcome to the type system house of mirrors. The `Object` constructor's `.create` method can be used to create objects that are not `Object` instances, and have no prototype. These are actually a primitive dictionary/map, but javascript's `typeof` operator doesn't recognize the difference. In many situations this is useful, but it inhibits plain reasoning about the type system.
-
-1. Declare `Object` and pass `Object.create(null)` 	-> throws
-1. Declare `object` and pass `Object` 				-> throws
-
-So, if you don't know whether you'll be getting an Object or an object, use `arg=Object|object`:
-
-```js
-let object
-
-function processData(data=object|Object) {
-	processData.check(arguments)
-	//...
-}
-```
-
 ## How it works
 The first time a checked function runs, the list of types is compiled to optimized runtime type check logic, which is cached for use on all subsequent function invocations. The generated logic is low-level, and executes within a single closure as a non-configurable/non-writable method.
 
