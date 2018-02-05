@@ -12,8 +12,8 @@ function printValueType(value) {
 	if (value.toString && '' + value === '[object Arguments]') return 'arguments'
 	if (value.constructor) return value.constructor.name
 
-	// values created with Object.create(null) are of type 'dictionary'
-	if (typeof value === 'object' && !value.constructor) return 'dictionary'
+	// values created with Object.create(null) are of type '~Object'
+	if (typeof value === 'object' && !value.constructor) return '~Object'
 
 	// Should never happen, but just in case...
 	return typeof value
@@ -28,20 +28,22 @@ function printObject(obj) {
 	const ind = '    '
 	let output = ''
 	if (!(obj instanceof Array)) {
-		Object.keys(obj).forEach(key => {
-			output += `\n  ${key}: ${printValueType(obj[key])},`
+		Object.keys(obj).forEach(function (key) {
+			output += '\n  '+key+': '+printValueType(obj[key])+','
 		})
-		output = `{\n  ${output.slice(0,-1).trim()}\n}`
+		output = '{\n  '+output.slice(0,-1).trim()+'\n}'
 	} else {
-		obj.forEach((num, i) => {
-			output += `\n  ${printValueType(obj[i])},`
+		obj.forEach(function (num, i) {
+			output += '\n  '+printValueType(obj[i])+','
 		})
-		output = `[\n  ${output.slice(0,-1).trim()}\n]`
+		output = '[\n  '+output.slice(0,-1).trim()+'\n]'
 	}
-	if (output.length < 50) {
-		output = output.replace(/\s+/g, ' ')
-	}
-	return output.split('\n').map(s=> ind + s).join('\n').trim()
+	if (output.length < 50) output = output.replace(/\s+/g, ' ')
+	return output
+		.split('\n')
+		.map(function (s) {return ind + s})
+		.join('\n')
+		.trim()
 }
 
 /**
@@ -51,11 +53,11 @@ function printObject(obj) {
  */
 function printValue(value) {
 	if (value === null) return 'null'
-	if (typeof value === 'string') return `"${value}"`
+	if (typeof value === 'string') return '"'+value+'"'
 	if (typeof value === 'undefined') return 'undefined'
 	if (typeof value === 'object') return printObject(value)
 	if (typeof value === 'function') {
-		return `function ${value.name}(...) ...`
+		return 'function '+value.name+'(...) ...' // Does not handle function* or async function.
 	}
 	return value.toString().slice(0,50)
 }
@@ -65,10 +67,10 @@ function printError(funcName, declaration, messages) {
 	let stack = error.stack.toString().split('\n')
 	let start = 0
 	for (let i = 0; i < stack.length; i++) {
-		if (stack[i].includes('compileCheck')) start = i + 1
+		if (~stack[i].indexOf('compileCheck')) start = i + 1
 	}
 	stack = stack.slice(start)
-	error.message = `${declaration}\n\n    ${messages.join('\n\n    ')}\n\n${stack.join('\n')}\n`
+	error.message = declaration+'\n\n    '+messages.join('\n\n    ')+'\n\n'+stack.join('\n')+'\n'
 	error.stack = ''
 	throw error
 }
@@ -82,13 +84,13 @@ function printError(funcName, declaration, messages) {
  */
 function getMessages(checkLogic, __args, failures) {
 	const count = checkLogic.names.length
-	return failures.map(f => {
-		if (f === -1) return `- Bad arity: ${count} parameters required; ${__args.length} passed.`
-		if (f > __args.length-1) return `- ${checkLogic.names[f]} was not provided.`
-		const problem = `- ${checkLogic.names[f]} was not of type ${checkLogic.types[f]}. `
+	return failures.map(function (f) {
+		if (f === -1) return '- Bad arity: '+count+' parameters required; '+__args.length+' passed.'
+		if (f > __args.length-1) return '- '+checkLogic.names[f]+' was not provided.'
+		const problem = '- '+checkLogic.names[f]+' was not of type '+checkLogic.types[f]+'. '
 		const passed = __args[f] === undefined || __args[f] === null
 			? printValueType(__args[f]) + ' passed.'
-			: `${printValueType(__args[f])} passed: ${printValue(__args[f])}`
+			: printValueType(__args[f]) + ' passed: ' + printValue(__args[f])
 		return problem + passed
 	})
 }
@@ -102,9 +104,9 @@ function getMessages(checkLogic, __args, failures) {
 function findFailures(checkLogic, __args) {
 	const failures = []
 	const counters = []
-	const checks = checkLogic.checks.map((chk, i) => (
-		chk.split('err(__args)').join(`failures.push(${i-1})`)
-	))
+	const checks = checkLogic.checks.map(function (chk, i) {
+		return chk.split('err(__args)').join('failures.push('+ (i-1) +')')
+	})
 	for (let i = 0; i <= checkLogic.types.length; i++) {
 		let c,f,k,v,e=0
 		try {

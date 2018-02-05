@@ -1,7 +1,7 @@
 'use strict'
 
 const assert = require('assert')
-require('..')
+require('../')
 
 //==================================================================== Error Messages ==============
 

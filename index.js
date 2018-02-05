@@ -6,7 +6,7 @@ const g = typeof window !== 'undefined' ? window : global
 const typesMap = {
 	ANY_TYPE: 	'',
 	Array: 		'if(!Array.isArray(v))e++;',
-	'~Array': 	'if(typeof v!=="object"||v===null||!("length" in v))e++;',
+	'~Array': 	'if(typeof v!=="object"||v===null||typeof v.length!=="number")e++;',
 	Boolean: 	'if(typeof v!=="boolean")e++;',
 	Function: 	'if(typeof v!=="function")e++;',
 	null: 		'if(v!==null)e++;',
@@ -16,10 +16,6 @@ const typesMap = {
 	'~Object':	'if(typeof v!=="object"||v===null||v.constructor)e++;',
 	String: 	'if(typeof v!=="string")e++;',
 	undefined: 	'if(typeof v!=="undefined")e++;'
-}
-
-function myFuncName(name=~Array, data=~Object) {
-	myFuncName.check(arguments)
 }
 
 /**
@@ -58,14 +54,12 @@ function genericTypeCheck(typeName, counters) {
 	const len = 'l' + id
 	const copy = 'v' + id
 	const keys = 'k' + id
-	return [
-		superCheck,
-		`var ${i},${len},${keys},${copy};`,
-		`${keys}=Object.keys(v);`,
-		`${len}=${keys}.length;`,
-		`${copy}=v;`,
-		`for(${i}=0;${i}<${len};${i}++){v=${copy}[${keys}[${i}]];${subCheck}}`
-	].join('')
+	return superCheck+
+		'var '+i+','+len+','+keys+','+copy+';'+
+		keys+'=Object.keys(v);'+ 
+		len+'='+keys+'.length;'+ 
+		copy+'=v;'+
+		'for('+i+'=0;'+i+'<'+len+';'+i+'++){v='+copy+'['+keys+'['+i+']];'+subCheck+'}'
 }
 
 /*
@@ -78,13 +72,13 @@ ensuring that it matches the semantics of the given duck type.
 function duckTypeCheck(typeName, counters) {
 	const propsList = splitBy(',', typeName.slice(1, -1))
 	const copy = 'v' + ++counters.length
-	const checks = [typesMap.Object, `var ${copy}=v;`]
-	propsList.forEach(prop => {
+	const checks = [typesMap.Object, 'var '+copy+'=v;']
+	propsList.forEach(function (prop) {
 		const [name, subType] = splitBy(':', prop)
 		checks.push(
-			`v=v["${name}"];`,
+			'v=v["'+name+'"];',
 			getTypeChecks(subType, counters).join(''),
-			`v=${copy};`
+			'v='+copy+';'
 		)
 	})
 	return checks.join('')
@@ -97,13 +91,13 @@ value's prototype ancestor's name must match the given type string.
 - returns: String
 */
 function namedTypeCheck(type) {
-	if (type in g) return `if (!(v instanceof ${type}))e++;`
+	if (type in g) return 'if (!(v instanceof '+type+'))e++;'
 	return (
 		'f=1;'+
 		'if(v!==undefined&&v!==null) {'+
 			'c=v.constructor;'+
 			'while(c){'+
-				`if(c.name==='${type}'){f=0;break};`+
+				'if(c.name==="'+type+'"){f=0;break};'+
 				'if(c.constructor===c){e++;break};'+
 				'c=c.__proto__;'+
 			'}'+
@@ -134,9 +128,11 @@ ensure that it matches the semantics of the given typeName.
 - returns: Array<String>
 */
 function getTypeChecks(typeName, counters) {
-	const disjuncts = splitBy('|', typeName).map(type => getTypeCheck(type, counters))
+	const disjuncts = splitBy('|', typeName).map(function (type) {
+		return getTypeCheck(type, counters)
+	})
 	if (disjuncts.length > 1) {
-		disjuncts.push(`if(e<${disjuncts.length})e=0;`) // If not all disjuncts failed, all's well.
+		disjuncts.push('if(e<'+disjuncts.length+')e=0;') // If not all disjuncts failed, all's well.
 	}
 	return disjuncts
 }
@@ -159,11 +155,11 @@ function splitBy(delimiter, list) {
 	}
 	bounds.push(list.length)
 	const split = bounds
-		.map((bound, pos) => {
+		.map(function (bound, pos) {
 			const prevBound = pos ? bounds[pos-1] + 1 : 0
 			return list.slice(prevBound, bound).trim()
 		})
-		.filter(s=>s)
+		.filter(function (s) {return s})
 	return split
 }
 
@@ -181,7 +177,7 @@ function removeComments(list) {
 	while(pos < list.length) {
 		const current = list[pos]
 		const peek = current + list[pos+1]
-		if (!inComment && open.includes(peek)) {
+		if (!inComment && ~open.indexOf(peek)) {
 			inComment = true
 			commentStart = pos
 			commentOpen = peek
@@ -214,18 +210,18 @@ function compile(src) {
 	let types = splitBy(',', removeComments(list))
 	const counters = []
 	const checks = [
-		'var c,f,k,v,e=0,err=this.check.e;' +
-		`if(__args.length!==${types.length})err(__args);`,
+		'var c,f,k,v,e=0,err=this.check.e;'+
+		'if(__args.length!=='+types.length+')err(__args);',
 	]
-	const names = types.map(type => type.split('=')[0].trim())
-	types = types.map(type => (type.split('=')[1] || 'ANY_TYPE').split(".").pop())
-	types.forEach((type, i) => (
-		checks.push(
-			`v=__args[${i}];` +
-			getTypeChecks(type, counters).join('') + 
-			'if(e)err(__args);'
-		)
-	))
+	const names = types.map(function (type) {
+		return type.split('=')[0].trim()
+	})
+	types = types.map(function (type) {
+		return (type.split('=')[1] || 'ANY_TYPE').split(".").pop()
+	})
+	types.forEach(function (type, i) {
+		checks.push('v=__args['+i+'];'+ getTypeChecks(type, counters).join('') +'if(e)err(__args);')
+	})
 	return {checks, list, names, types, code:checks.join('')}
 }
 
