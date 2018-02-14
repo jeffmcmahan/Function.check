@@ -128,7 +128,7 @@ class User {
 **Notice:** Arrow functions are not supported because they do not bind an `arguments` object.
 
 ## Type Support
-All types available to your function declaration are supported automatically.
+All types available to your function declaration are supported automatically, with sole exception of `undefined` (which is always invalid).
 
 ```js
 class User {}

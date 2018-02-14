@@ -98,19 +98,47 @@ function undefType(arg=undefined) {
 	undefType.check(arguments)
 }
 
-assert.doesNotThrow(
+assert.throws(
 	()=>undefType(undefined),
-	'Should not throw when undefined matches the type declaration.'
+	'Should throw when undefined is declared.'
 )
 
-assert.throws(
-	()=>undefType(null),
-	'Should throw when undefined is required but null passed.'
-)
+function undefTypeDuck(arg={foo:undefined}) {
+	undefType.check(arguments)
+}
 
 assert.throws(
-	()=>undefType(),
-	'Should throw when undefined is required but nothing is passed.'
+	()=>undefTypeDuck({foo:undefined}),
+	'Should throw when undefined is declared within a ducktype.'
+)
+
+function undefTypeGeneric(arg={foo:undefined}) {
+	undefType.check(arguments)
+}
+
+assert.throws(
+	()=>undefTypeGeneric([undefined]),
+	'Should throw when undefined is declared within a ducktype.'
+)
+
+function typeWithUndefComment(arg=String /* undefined */) {
+	typeWithUndefComment.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>typeWithUndefComment(''),
+	'Should not throw when "undefined" appears only in a comment (#1).'
+)
+
+function typeWithUndefComment2(
+	arg=String // undefined
+) {
+	typeWithUndefComment2.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>typeWithUndefComment(''),
+	'Should not throw when "undefined" appears only in a comment (#2).'
 )
 
 //================================================================ arguments =======================

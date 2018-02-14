@@ -14,8 +14,7 @@ const typesMap = {
 	Number: 	'if(typeof v!=="number"||v+""==="NaN")e++;',
 	Object: 	'if(Array.isArray(v)||!(v instanceof Object))e++;',
 	'~Object':	'if(typeof v!=="object"||v===null||v.constructor)e++;',
-	String: 	'if(typeof v!=="string")e++;',
-	undefined: 	'if(typeof v!=="undefined")e++;'
+	String: 	'if(typeof v!=="string")e++;'
 }
 
 /**
@@ -207,7 +206,11 @@ function source string.
 */
 function compile(src) {
 	const list = getArgsList(src)
-	let types = splitBy(',', removeComments(list))
+	const listNoComments = removeComments(list)
+	if (listNoComments.includes('undefined')) {
+		throw new SyntaxError('The value "undefined" is not a valid a type declaration.');
+	}
+	let types = splitBy(',', listNoComments)
 	const counters = []
 	const checks = [
 		'var c,f,k,v,e=0,err=this.check.e;'+
