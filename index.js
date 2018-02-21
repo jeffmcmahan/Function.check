@@ -54,11 +54,13 @@ function genericTypeCheck(typeName, counters) {
 	const copy = 'v' + id
 	const keys = 'k' + id
 	return superCheck+
-		'var '+i+','+len+','+keys+','+copy+';'+
-		keys+'=Object.keys(v);'+ 
-		len+'='+keys+'.length;'+ 
-		copy+'=v;'+
-		'for('+i+'=0;'+i+'<'+len+';'+i+'++){v='+copy+'['+keys+'['+i+']];'+subCheck+'}'
+		'if(typeof v==="object" && v!==null){'+
+			'var '+i+','+len+','+keys+','+copy+';'+
+			keys+'=Object.keys(v);'+ 
+			len+'='+keys+'.length;'+ 
+			copy+'=v;'+
+			'for('+i+'=0;'+i+'<'+len+';'+i+'++){v='+copy+'['+keys+'['+i+']];'+subCheck+'}'+
+		'}'
 }
 
 /*

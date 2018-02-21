@@ -377,6 +377,21 @@ function genericArr(names=Array[String]) {
 	genericArr.check(arguments)
 }
 
+assert.throws(
+	()=>genericArr(undefined),
+	'Should throw when undefined is passed.'
+)
+
+assert.throws(
+	()=>genericArr(null),
+	'Should throw when null is passed.'
+)
+
+assert.throws(
+	()=>genericArr(5),
+	'Should throw when a primitive is passed.'
+)
+
 assert.doesNotThrow(
 	()=>genericArr(['John']),
 	'Should not throw when the generic type is satisfied.'

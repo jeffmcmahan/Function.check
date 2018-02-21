@@ -1,6 +1,6 @@
 {
   "name": "function.check",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "description": "Runtime type checking in plain javascript",
   "main": "index.js",
   "directories": {
@@ -20,8 +20,8 @@
   },
   "homepage": "https://github.com/jeffmcmahan/Function.check#readme",
   "devDependencies": {
-	"benchmark": "^2.1.4",
-	"markdown-it": "^8.4.0"
+    "benchmark": "^2.1.4",
+    "markdown-it": "^8.4.0"
   },
   "dependencies": {}
 }
