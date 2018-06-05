@@ -42,29 +42,20 @@ function ducktypes(arg={prop:String}) {
 
 suite.add('primitives', function() {
   	primitives(str)
-})
-.add('arrays', function() {
+}).add('arrays', function() {
 	arrays(arr)
-})
-.add('objects', function() {
+}).add('objects', function() {
 	objects(obj)
-})
-.add('unions', function() {
+}).add('unions', function() {
 	unions(str)
-})
-.add('classes', function() {
+}).add('classes', function() {
 	customClass(someTypeInstance)
-})
-.add('generics', function() {
+}).add('generics', function() {
 	generics(strArr)
-})
-.add('ducktypes', function() {
+}).add('ducktypes', function() {
 	ducktypes(duck)
-})
-.on('cycle', function(event) {
+}).on('cycle', function(event) {
   	console.log(String(event.target))
-})
-.on('complete', function() {
+}).on('complete', function() {
   	console.log('Fastest is ' + this.filter('fastest').map('name'))
-})
-.run()
+}).run()

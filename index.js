@@ -7,14 +7,14 @@ const typesMap = {
 	ANY_TYPE: 	'',
 	Array: 		'if(!Array.isArray(v))e++;',
 	'~Array': 	'if(typeof v!=="object"||v===null||typeof v.length!=="number")e++;',
-	Boolean: 	'if(typeof v!=="boolean")e++;',
-	Function: 	'if(typeof v!=="function")e++;',
+	Boolean: 	'if(typeof v!=="boolean"&&!(v instanceof Boolean))e++;',
+	Function: 	'if(typeof v!=="function"&&!(v instanceof Function))e++;',
 	null: 		'if(v!==null)e++;',
-	NaN:		'if(typeof v==="number"&&!isNaN(v))e++;',
-	Number: 	'if(typeof v!=="number"||v+""==="NaN")e++;',
+	NaN:		'if((typeof v==="number"||v instanceof Number)&&!isNaN(v))e++;',
+	Number: 	'if(typeof v!=="number"&&!(v instanceof Number)||isNaN(v))e++;',
 	Object: 	'if(Array.isArray(v)||!(v instanceof Object))e++;',
 	'~Object':	'if(typeof v!=="object"||v===null||v.constructor)e++;',
-	String: 	'if(typeof v!=="string")e++;'
+	String: 	'if(typeof v!=="string"&&!(v instanceof String))e++;'
 }
 
 /**
@@ -95,7 +95,7 @@ function namedTypeCheck(type) {
 	if (type in g) return 'if (!(v instanceof '+type+'))e++;'
 	return (
 		'f=1;'+
-		'if(v!==undefined&&v!==null) {'+
+		'if(v!==undefined&&v!==null){'+
 			'c=v.constructor;'+
 			'while(c){'+
 				'if(c.name==="'+type+'"){f=0;break};'+

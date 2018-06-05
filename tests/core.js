@@ -35,8 +35,8 @@ assert.throws(
 
 assert.throws(
 	()=>arity(1, 2, 3),
-	'Should throw when too many arguments are passed.',
-	err => err.message.includes('Too many arguments')
+	err => err.message.includes('Bad arity'),
+	'Should throw when too many arguments are passed.'
 )
 
 //==================================================================== Any =========================
@@ -182,8 +182,8 @@ assert.throws(
 
 assert.throws(
 	()=>primitives(false, '', NaN, [], {}, ()=>{}),
-	'Primitives: Should throw when Number is required, but NaN is passed.',
-	err => err.message.includes('NaN')
+	err => err.message.includes('NaN'),
+	'Primitives: Should throw when Number is required, but NaN is passed.'
 )
 
 assert.throws(
@@ -298,6 +298,63 @@ assert.doesNotThrow(
 assert.doesNotThrow(
 	()=>superclass2(new VeryCustomObject),
 	'Should not throw when a subclass is passed. (#3)'
+)
+
+//===================================================================== Extended Primitives ========
+
+// These are necessary because the core is implemented to avoid relying on
+// slow instanceof tests, or on even slower __proto__/constructor lookups unless
+// necessary. It has to use typeof first, to keep the usual cases speedy, and
+// that makes the tests below reasonably failure-prone.
+
+class Int extends Number {}
+class SuperBool extends Boolean {}
+class SuperFunc extends Function {}
+class Rope extends String {}
+
+function extendedPrimitive(a=Int) {
+	extendedPrimitive.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>extendedPrimitive(new Int),
+	'Should not throw when an extended primitive is declared and the same is passed.'
+)
+
+function extendedPrimitive2(a=Number) {
+	extendedPrimitive2.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>extendedPrimitive2(new Int),
+	'Should not throw when a Number is declared and an extended number (Int) is passed.'
+)
+
+function extendedPrimitive3(a=Boolean) {
+	extendedPrimitive3.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>extendedPrimitive3(new SuperBool),
+	'Should not throw when an Boolean is declared and an extended Boolean instance is passed.'
+)
+
+function extendedPrimitive4(a=Function) {
+	extendedPrimitive4.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>extendedPrimitive4(new SuperFunc),
+	'Should not throw when a Function is declared and an extended Function instance is passed.'
+)
+
+function extendedPrimitive5(a=String) {
+	extendedPrimitive5.check(arguments)
+}
+
+assert.doesNotThrow(
+	()=>extendedPrimitive5(new Rope),
+	'Should not throw when a String is declared and an extended String instance is passed.'
 )
 
 //===================================================================== Methods ====================

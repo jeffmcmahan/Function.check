@@ -52,16 +52,16 @@ TypeError: newUser(name = String, email = String, age = Number) {...
 Benchmark.js indicates that Function.check is *quite* fast (see /tests/benchmark.js):
 
 ```
-unions 			x 154,604,016 ops/sec 	±0.75% 	(93 runs sampled)
-arrays 			x 151,521,044 ops/sec 	±0.67% 	(90 runs sampled)
-primitives 		x 150,545,643 ops/sec 	±0.56% 	(92 runs sampled)
-objects 		x 132,546,437 ops/sec 	±0.75% 	(86 runs sampled)
-duck types 		x  95,785,643 ops/sec 	±0.71% 	(89 runs sampled)
-custom classes 	x  30,297,449 ops/sec 	±0.70% 	(91 runs sampled)
-generics 		x   6,280,304 ops/sec 	±0.73% 	(93 runs sampled)
+primitives 		x 155,101,862 ops/sec 	±0.56% 	(92 runs sampled)
+arrays 			x 151,197,548 ops/sec 	±0.67% 	(90 runs sampled)
+objects 		x 140,921,912 ops/sec 	±0.75% 	(86 runs sampled)
+unions 			x 113,092,517 ops/sec 	±0.75% 	(93 runs sampled)
+duck types 		x 111,949,880 ops/sec 	±0.71% 	(89 runs sampled)
+custom classes 	x  30,601,524 ops/sec 	±0.70% 	(91 runs sampled)
+generics 		x   6,558,472 ops/sec 	±0.73% 	(93 runs sampled)
 
 Mid-2014 15" MacBook Pro
-Node 9.0.0
+Node 9.9.0
 ```
 
 ## Supports named and anonymous functions.
