@@ -109,5 +109,3 @@ assert.throws(
 // @todo Union type errors.
 // @todo Duck type errors.
 // @todo Generis need generic-style type names: "... Array[Mixed] passed: [1, 'Joe', ..."
-
-console.log('Error tests passed.')

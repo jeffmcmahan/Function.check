@@ -62,7 +62,7 @@ function printValue(value) {
 	return value.toString().slice(0,50)
 }
 
-function printError(funcName, declaration, messages) {
+function printError(funcName, declaration, messages, async=false) {
 	const error = new TypeError('') // We'll totally rework this.
 	let stack = error.stack.toString().split('\n')
 	let start = 0
@@ -72,6 +72,11 @@ function printError(funcName, declaration, messages) {
 	stack = stack.slice(start)
 	error.message = declaration+'\n\n    '+messages.join('\n\n    ')+'\n\n'+stack.join('\n')+'\n'
 	error.stack = ''
+	if (async && typeof process === 'object') {
+		if (!__IS_TESTING) {
+			process.emitWarning(error)
+		}
+	}
 	throw error
 }
 
@@ -124,9 +129,38 @@ function findFailures(checkLogic, __args) {
  - param checkLogic: String
  - param __args: Arguments
  */
-module.exports = function (func, checkLogic, __args) {
+exports.sync = function (func, checkLogic, __args) {
 	const failures = findFailures.call(this, checkLogic, __args) // Provide this for eval() calls.
 	const messages = getMessages(checkLogic, __args, failures)
 	const declaration = `\n\n${func.name || 'anonymous'}(${checkLogic.list}) { ...`
 	printError(func.name, declaration, messages)
+}
+
+// Converts a native arguments object to an array.
+function toArray(args) {
+	const arr = []
+	for (let i = 0; i < args.length; i++) {
+		arr[i] = args[i]
+	}
+	return arr
+}
+
+/*
+Reports that the given promise resolved a value not permitted by the type declaration.
+ - param func: Function
+ - param checkLogic: String
+ - param __args: Arguments
+ - param promise: Promise
+ - param badValue: *
+*/
+exports.async = function (func, checkLogic, __args, promise, badValue) {
+	const declaration = `\n\n${func.name || 'anonymous'}(${checkLogic.list}) { ...`
+	const argNum = toArray(__args).indexOf(promise)
+	const resolved = 'The promise resolved '+ printValueType(badValue) + ': ' + printValue(badValue)
+	const messages = [
+		'- ' + 
+		checkLogic.names[argNum] + ' was not of type ' + 
+		checkLogic.types[argNum] + '. ' + resolved
+	]
+	printError(func.name, declaration, messages, true)
 }

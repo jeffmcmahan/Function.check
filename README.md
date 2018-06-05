@@ -52,16 +52,16 @@ TypeError: newUser(name = String, email = String, age = Number) {...
 Benchmark.js indicates that Function.check is *quite* fast (see /tests/benchmark.js):
 
 ```
-primitives 		x 155,101,862 ops/sec 	±0.56% 	(92 runs sampled)
-arrays 			x 151,197,548 ops/sec 	±0.67% 	(90 runs sampled)
-objects 		x 140,921,912 ops/sec 	±0.75% 	(86 runs sampled)
-unions 			x 113,092,517 ops/sec 	±0.75% 	(93 runs sampled)
-duck types 		x 111,949,880 ops/sec 	±0.71% 	(89 runs sampled)
-custom classes 	x  30,601,524 ops/sec 	±0.70% 	(91 runs sampled)
-generics 		x   6,558,472 ops/sec 	±0.73% 	(93 runs sampled)
+primitives 		x 224,658,906 ops/sec 	±0.56% 	(92 runs sampled)
+arrays 			x 130,952,997 ops/sec 	±0.67% 	(90 runs sampled)
+objects 		x 125,843,530 ops/sec 	±0.75% 	(86 runs sampled)
+unions 			x 107,427,725 ops/sec 	±0.75% 	(93 runs sampled)
+duck types 		x  91,229,897 ops/sec 	±0.71% 	(89 runs sampled)
+custom classes 	x  34,945,957 ops/sec 	±0.70% 	(91 runs sampled)
+generics 		x   8,502,684 ops/sec 	±0.73% 	(93 runs sampled)
 
 Mid-2014 15" MacBook Pro
-Node 9.9.0
+Node.js 10.3.0
 ```
 
 ## Supports named and anonymous functions.
@@ -197,7 +197,7 @@ function newUser(conf={name:String, age:Number|String}) {
 ```
 
 ## Generics
-Generic array and object types can be specified, by altering the standard angle bracket notation to use square brackets instead. An array of strings would thus be expressed: `Array[String]` instead of `Array<String>`.
+Generic array, object, and promise types can be specified, by altering the standard angle bracket notation to use square brackets instead. An array of strings would thus be expressed: `Array[String]` instead of `Array<String>`.
 
 ```js
 function newUser(name=String, friends=Array[User]) {
@@ -210,6 +210,27 @@ Generic types can be nested indefinitely and can use disjoint and duck types. Fo
 
 ```js
 Array[{name:String, age:Number|String}]
+```
+
+Promise generics indicate the type of value resolved, as follows:
+
+```js
+Promise[String]
+```
+
+If a promise is passed which resolves the number 5 instead of a string, for example, the following error message will appear:
+
+```
+TypeError:
+
+foo(bar=Promise[String]) { ...
+
+    - bar was not of type Promise[String]. The promise resolved Number: 5
+
+    at process._tickCallback (internal/process/next_tick.js:68:7)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:746:11)
+    at startup (internal/bootstrap/node.js:238:19)
+    ...
 ```
 
 ## Arity is strict.

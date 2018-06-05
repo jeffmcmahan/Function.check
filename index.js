@@ -38,8 +38,8 @@ function getArgsList(src) {
 }
 
 /*
-Generates a function which resursively checks the type of a single value,
-ensuring that it matches the semantics of the given generic type.
+Generates logic checks the type of a single value, ensuring that it matches the 
+semantics of the given generic type.
 - param typeName: String
 - param counters: Array
 - returns: Function
@@ -50,18 +50,34 @@ function genericTypeCheck(typeName, counters) {
 	const subType = typeName.slice(superName.length+1, -1)
 	const subCheck = getTypeChecks(subType, counters)
 	const id = ++counters.length
+	const copy = 'v' + id
+
+	// Promises.
+	if (superName === 'Promise') {
+		return copy+'=v;'+copy+'.then(v=>{'+
+			subCheck+';'+
+			'if(e){'+
+				'this.check.asyncErr(__args, '+copy+', v);'+
+			'}'+
+		'});'
+	}
+
+	// Enumerables.
 	const i = 'i' + id
 	const len = 'l' + id
-	const copy = 'v' + id
+	
 	const keys = 'k' + id
-	return superCheck+
-		'if(typeof v==="object" && v!==null){'+
+	return (
+		superCheck+
+		'if(typeof v==="object"&&v!==null){'+
 			'var '+i+','+len+','+keys+','+copy+';'+
 			keys+'=Object.keys(v);'+ 
 			len+'='+keys+'.length;'+ 
 			copy+'=v;'+
 			'for('+i+'=0;'+i+'<'+len+';'+i+'++){v='+copy+'['+keys+'['+i+']];'+subCheck+'}'+
-		'}'
+		'}' 
+		// Shouldn't this throw in the else branch if we don't have an enumerable?
+	)
 }
 
 /*
@@ -243,7 +259,7 @@ function getLogic(types) {
 	} else {
 		 // Generate the check logic.
 		checks.push(
-			'var c,f,k,v,e=0,err=this.check.e;'+
+			'var c,f,k,v,e=0,err=this.check.err;asyncErr=this.check.asyncErr;'+
 			'if(__args.length!=='+types.length+')err(__args);',
 		)
 		types.forEach(function (type, i) {
@@ -283,7 +299,8 @@ check statemnets (no function calls).
 function compileCheck(__args) {
 	const logic = compile(this.toString())
 	const check = Function('__args', logic.code).bind(this)
-	check.e = error.bind(this, this, logic)
+	check.err = error.sync.bind(this, this, logic)
+	check.asyncErr = error.async.bind(this, this, logic)
 	Object.defineProperty(this, 'check', {
 		configurable: false,
 		enumerable: false,
