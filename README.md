@@ -20,7 +20,6 @@ Declare argument types using ES6 default value syntax and pass `arguments` to `<
 
 ```js
 function newUser(name = String, email = String, age = Number) {
-    
     newUser.check(arguments)
     
     // Do stuff.
@@ -30,7 +29,9 @@ function newUser(name = String, email = String, age = Number) {
 Failures are clearly indicated:
 
 ```
-TypeError: newUser(name = String, email = String, age = Number) {...
+TypeError: 
+
+newUser(name = String, email = String, age = Number) {...
 
      - name was not of type String. Boolean provided: false
 
@@ -68,23 +69,9 @@ Node.js 10.3.0
 Ordinary functions and methods as well as async functions, generator functions, and async generator functions are all supported:
 
 ```js
-function newUser(name=String, email=String, zipcode=Number) {
-    newUser.check(arguments)
-    //...
-}
-
-async function newUser(name=String, email=String, zipcode=Number) {
-    newUser.check(arguments)
-    //...
-}
-
-function* newUser(name=String, email=String, zipcode=Number) {
-    newUser.check(arguments)
-    //...
-}
-
 async function* newUser(name=String, email=String, zipcode=Number) {
     newUser.check(arguments)
+
     //...
 }
 ```
@@ -93,6 +80,7 @@ Anonymous functions:
 ```js
 const newUser = async function*(name=String, email=String, zipcode=Number) {
     newUser.check(arguments)
+
     //...
 }
 ```
@@ -103,6 +91,7 @@ To check a method's arguments, use `<namespace>.<method-name>` to check argument
 class User {
     promote(newRole=String, promotedBy=User) {
         this.promote.check(arguments)
+
         //...
     }
 }
@@ -110,6 +99,7 @@ class User {
 const ns = {
     newUser: function (name=String, email=String, zipcode=Number) {
         ns.newUser.check(arguments)
+
         //...
     }
 }
@@ -120,12 +110,13 @@ Constructors are supported, too:
 class User {
     constructor(name=String, email=String, zipcode=Number) {
         User.check(arguments)
+
         //...
     }
 }
 ```
 
-**Notice:** Arrow functions are not supported because they do not bind an `arguments` object.
+Arrow functions are not supported because they do not bind an `arguments` object.
 
 ## Type Support
 All types available to your function declaration are supported automatically, with sole exception of `undefined` (which is always invalid).
@@ -135,6 +126,7 @@ class User {}
 
 async function authorize(user = User, password = String) {
     authorize.check(arguments)
+
     // ...
 }
 ```
@@ -147,6 +139,7 @@ class Administrator extends User {}
 
 async function authorize(user = User, password = String) {
     authorize.check(arguments)
+
     // ...
 }
 
@@ -159,19 +152,9 @@ To allow any type, don't specify a type, as in the case of the "age" parameter, 
 ```js
 function newUser(name=String, age, phone=String) {
     newUser.check(arguments)
+
     //...
-} 
-```
-
-Or to make it explicit, just define `Any` (doesn't matter what the value is), and use it thus:
-
-```js
-let Any
-
-function newUser(name=String, age=Any, phone=String) {
-    newUser.check(arguments)
-    //...
-} 
+}
 ```
 
 ## Disjoint/Union Types
@@ -180,11 +163,12 @@ Use the bitwise single bar operator to describe union types, as in: `Number|Bool
 ```js
 function newUser(name=String, age=Number|String) {
     newUser.check(arguments)
+
     //...
 }
 ```
 
-You can use `null` as well, as in: `data=Object|null`, to permit a falsy value. It's probably best to have the calling function pass a type-consistent falsy value (*i.e.,* an empty string for `String`, or 0 for `Number`), and use `null` only as a disjunct for non-primitive values, since cannot not have falsy values.
+You can use `null` as well, as in: `data=Object|null`.
 
 ## Duck Types
 Duck types are object literals. They can be nested indefinitely, and each propery can be disjoint, generic, or a duck type itself.
@@ -192,6 +176,7 @@ Duck types are object literals. They can be nested indefinitely, and each proper
 ```js
 function newUser(conf={name:String, age:Number|String}) {
     newUser.check(arguments)
+
     //...
 }
 ```
@@ -202,6 +187,7 @@ Generic array, object, and promise types can be specified, by altering the stand
 ```js
 function newUser(name=String, friends=Array[User]) {
     newUser.check(arguments)
+    
     //...
 }
 ```
@@ -247,7 +233,7 @@ The first time a checked function runs, the list of types is compiled to optimiz
 Use `require('function.check').compile(myFunc.toString()).code` to examine the check logic. The following type declarations generate the code shown below:
 
 ```js
-function (name=String, age=Number, data=Object|null) {...
+function foo(name=String, age=Number, data=Object|null) {...
 ```
 
 Generated type check code (beautified):
