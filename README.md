@@ -20,10 +20,10 @@ Declare argument types using ES6 default value syntax and pass `arguments` to `<
 
 ```js
 function newUser(name = String, email = String, age = Number) {
-	
-	newUser.check(arguments)
-	
-	// Do stuff.
+    
+    newUser.check(arguments)
+    
+    // Do stuff.
 }
 ```
 
@@ -69,31 +69,31 @@ Ordinary functions and methods as well as async functions, generator functions, 
 
 ```js
 function newUser(name=String, email=String, zipcode=Number) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 
 async function newUser(name=String, email=String, zipcode=Number) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 
 function* newUser(name=String, email=String, zipcode=Number) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 
 async function* newUser(name=String, email=String, zipcode=Number) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 ```
 
 Anonymous functions:
 ```js
 const newUser = async function*(name=String, email=String, zipcode=Number) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 ```
 
@@ -101,27 +101,27 @@ To check a method's arguments, use `<namespace>.<method-name>` to check argument
 
 ```js
 class User {
-	promote(newRole=String, promotedBy=User) {
-		this.promote.check(arguments)
-		//...
-	}
+    promote(newRole=String, promotedBy=User) {
+        this.promote.check(arguments)
+        //...
+    }
 }
 
 const ns = {
-	newUser: function (name=String, email=String, zipcode=Number) {
-		ns.newUser.check(arguments)
-		//...
-	}
+    newUser: function (name=String, email=String, zipcode=Number) {
+        ns.newUser.check(arguments)
+        //...
+    }
 }
 ```
 
 Constructors are supported, too:
 ```js
 class User {
-	constructor(name=String, email=String, zipcode=Number) {
-		User.check(arguments)
-		//...
-	}
+    constructor(name=String, email=String, zipcode=Number) {
+        User.check(arguments)
+        //...
+    }
 }
 ```
 
@@ -134,8 +134,8 @@ All types available to your function declaration are supported automatically, wi
 class User {}
 
 async function authorize(user = User, password = String) {
-	authorize.check(arguments)
-	// ...
+    authorize.check(arguments)
+    // ...
 }
 ```
 
@@ -146,8 +146,8 @@ class User {}
 class Administrator extends User {}
 
 async function authorize(user = User, password = String) {
-	authorize.check(arguments)
-	// ...
+    authorize.check(arguments)
+    // ...
 }
 
 authorize(new Administrator, 'password1') // Pass.
@@ -158,8 +158,8 @@ To allow any type, don't specify a type, as in the case of the "age" parameter, 
 
 ```js
 function newUser(name=String, age, phone=String) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 } 
 ```
 
@@ -169,8 +169,8 @@ Or to make it explicit, just define `Any` (doesn't matter what the value is), an
 let Any
 
 function newUser(name=String, age=Any, phone=String) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 } 
 ```
 
@@ -179,8 +179,8 @@ Use the bitwise single bar operator to describe union types, as in: `Number|Bool
 
 ```js
 function newUser(name=String, age=Number|String) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 ```
 
@@ -191,8 +191,8 @@ Duck types are object literals. They can be nested indefinitely, and each proper
 
 ```js
 function newUser(conf={name:String, age:Number|String}) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 ```
 
@@ -201,8 +201,8 @@ Generic array, object, and promise types can be specified, by altering the stand
 
 ```js
 function newUser(name=String, friends=Array[User]) {
-	newUser.check(arguments)
-	//...
+    newUser.check(arguments)
+    //...
 }
 ```
 
