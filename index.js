@@ -14,7 +14,8 @@ const typesMap = {
 	Number: 	'if(typeof v!=="number"&&!(v instanceof Number)||isNaN(v))e++;',
 	Object: 	'if(Array.isArray(v)||!(v instanceof Object))e++;',
 	'~Object':	'if(typeof v!=="object"||v===null||v.constructor)e++;',
-	String: 	'if(typeof v!=="string"&&!(v instanceof String))e++;'
+	String: 	'if(typeof v!=="string"&&!(v instanceof String))e++;',
+	undefined: 	'throw new SyntaxError("undefined is not a valid type declaration.")'
 }
 
 /**
@@ -88,17 +89,19 @@ function duckTypeCheck(typeName, counters) {
 /*
 Generates a nominal type check: the value's constructor name, or one of the
 value's prototype ancestor's name must match the given type string.
-- param type: String
+- param typeName: String
 - returns: String
 */
-function namedTypeCheck(type) {
-	if (type in g) return 'if (!(v instanceof '+type+'))e++;'
+function namedTypeCheck(typeName) {
+	if (typeName in g) {
+		return 'if(!(v instanceof '+typeName+'))e++;'
+	}
 	return (
 		'f=1;'+
 		'if(v!==undefined&&v!==null){'+
 			'c=v.constructor;'+
 			'while(c){'+
-				'if(c.name==="'+type+'"){f=0;break};'+
+				'if(c.name==="'+typeName+'"){f=0;break};'+
 				'if(c.constructor===c){e++;break};'+
 				'c=c.__proto__;'+
 			'}'+
@@ -122,8 +125,8 @@ function getTypeCheck(typeName, counters) {
 }
 
 /*
-Generates a single function that recursively checks the type of a value to
-ensure that it matches the semantics of the given typeName.
+Generates function body logic to check the type of a value to ensure
+that it matches the semantics of the given typeName.
 - param typeName: String
 - param counters: Array
 - returns: Array<String>
@@ -201,33 +204,75 @@ function removeComments(list) {
 }
 
 /*
+Transform the src declaration into a series of both names and types.
+- param src: String
+- returns: Object
+*/
+function parseDeclaration(src) {
+	const list = getArgsList(src)
+	const listNoComments = removeComments(list)
+	let types = splitBy(',', listNoComments)
+	const names = types.map(function (type) {
+		return type.split('=')[0].trim()
+	})
+	types = types.map(function (type) {
+		return (type.split('=')[1] || 'ANY_TYPE').split(".").pop().trim()
+	})
+	return {list, names, types}
+}
+
+// We have an object to store generated logic for each combination of
+// types, so that we don't generate the same checks twice. It is of the
+// form: { "String,Number,Array": Array<String> }
+const cache = {} 
+
+/*
+Generate logic for the given list of declared types (or pull it from the cache).
+- param types: Array<String>
+- returns: Object -- {checks: Array<String>, code: String}
+- note: Differences in the order of duckType keys cannot be captured here; to do so
+	we'd have to complicate the cache-lookup process -- not worth it, most likley.
+*/
+function getLogic(types) {
+	const counters = []
+	let checks = []
+	const typeDesc = types.join(',').replace(/\s/, '')
+	if (typeDesc in cache) {
+		// Retrieve cached check logic.
+		checks = cache[typeDesc]
+	} else {
+		 // Generate the check logic.
+		checks.push(
+			'var c,f,k,v,e=0,err=this.check.e;'+
+			'if(__args.length!=='+types.length+')err(__args);',
+		)
+		types.forEach(function (type, i) {
+			checks.push(
+				'v=__args['+i+'];'+
+				getTypeChecks(type, counters).join('')+
+				'if(e)err(__args);'
+			)
+		})
+		cache[typeDesc] = checks
+	}
+	return {checks, code:checks.join('')}
+}
+
+/*
 Compiles a set of type check statements for type declarations given in the
 function source string.
 - param src: String
 - returns: Object
 */
 function compile(src) {
-	const list = getArgsList(src)
-	const listNoComments = removeComments(list)
-	if (listNoComments.includes('undefined')) {
-		throw new SyntaxError('The value "undefined" is not a valid a type declaration.');
-	}
-	let types = splitBy(',', listNoComments)
-	const counters = []
-	const checks = [
-		'var c,f,k,v,e=0,err=this.check.e;'+
-		'if(__args.length!=='+types.length+')err(__args);',
-	]
-	const names = types.map(function (type) {
-		return type.split('=')[0].trim()
-	})
-	types = types.map(function (type) {
-		return (type.split('=')[1] || 'ANY_TYPE').split(".").pop()
-	})
-	types.forEach(function (type, i) {
-		checks.push('v=__args['+i+'];'+ getTypeChecks(type, counters).join('') +'if(e)err(__args);')
-	})
-	return {checks, list, names, types, code:checks.join('')}
+	// Interpret the declaration.
+	const {list, names, types} = parseDeclaration(src)
+
+	// Generate the check logic to enforce the declaration.
+	const {checks, code} = getLogic(types)
+
+	// Return code and data fully describing the requirements imposed by the declaration.
+	return {list, names, types, checks, code}
 }
 
 /*

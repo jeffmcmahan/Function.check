@@ -609,4 +609,28 @@ assert.throws(
 	'Should throw when commented declaration types do not match values passed.'
 )
 
+//======================================================================= Cache ====================
+
+const arg = {user:{name:''}, weight:155}
+function complexType(a={user:{name:String}, weight:Number}) {
+	complexType.check(arguments)
+}
+
+// Run it once to cache the type.
+assert.doesNotThrow(
+	()=>complexType(arg),
+	'Should not throw when we declare a type (just to cache it).'
+)
+
+// Do it again to test the caching mechanism for complex types.
+function complexType2(b={user:{name:String},weight:Number}) {
+	complexType2.check(arguments)
+}
+
+// Now ensure that the cached type check logic worked.
+assert.doesNotThrow(
+	()=>complexType2(arg),
+	'Should not throw when we declare a type (just to cache it).'
+)
+
 console.log('Core tests passed.')
